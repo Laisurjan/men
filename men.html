@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>電玩主角刻板印象 BINGO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #020617;
+      --bg-soft: #020c1b;
+      --card: #020617;
+      --card-soft: #020c1b;
+      --accent: #22d3ee;
+      --accent-soft: rgba(34,211,238,0.15);
+      --border: #1e293b;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --danger: #f97373;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #0f172a 0, #020617 55%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden; /* 防止橫向捲動 */
+    }
+
+    .app {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 16px 16px 72px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      background: linear-gradient(120deg, #020617, #020b19);
+      border: 1px solid rgba(148,163,184,0.35);
+      box-shadow: 0 22px 40px rgba(15,23,42,0.7);
+      position: sticky;
+      top: 8px;
+      z-index: 10;
+      backdrop-filter: blur(18px);
+    }
+
+    header .title-block {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: .08em;
+      background: linear-gradient(90deg,#22d3ee,#a855f7);
+      -webkit-background-clip: text;
+      color: transparent;
+      text-transform: uppercase;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    header span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .pill {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: radial-gradient(circle at top left, rgba(56,189,248,.6), transparent);
+      border: 1px solid rgba(148,163,184,0.5);
+      font-size: 11px;
+      color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .pill svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    main {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.5fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    @media (max-width: 840px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        border-radius: 18px;
+      }
+      main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .pill {
+        align-self: flex-end;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .app {
+        padding-inline: 10px;
+      }
+      .board-card,
+      .panel {
+        padding: 12px 10px 12px;
+      }
+      .cell {
+        padding: 4px 2px 6px;
+        font-size: 10px;
+      }
+      .cell-category {
+        font-size: 9px;
+      }
+    }
+
+    /* 左側：賓果盤 */
+
+    .board-card {
+      background: linear-gradient(145deg,#020617,#020c1b);
+      border-radius: 22px;
+      padding: 14px 14px 10px;
+      border: 1px solid var(--border);
+      box-shadow: 0 24px 40px rgba(15,23,42,0.8);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .board-card::before {
+      content:"";
+      position:absolute;
+      inset:-60%;
+      background: radial-gradient(circle at top, rgba(56,189,248,.09), transparent 60%);
+      opacity:.8;
+      pointer-events:none;
+    }
+
+    .board-header {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+
+    .board-header h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .board-header p {
+      margin: 4px 0 0;
+      font-size: 11px;
+      color: var(--muted);
+      max-width: 260px;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .grid {
+      position: relative;
+      z-index: 1;
+      margin-top: 4px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .cell {
+      border-radius: 12px;
+      padding: 6px 4px 8px;
+      min-height: 68px;
+      background: rgba(15,23,42,0.8);
+      border: 1px solid rgba(30,64,175,0.5);
+      color: var(--text);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      transition: all .18s ease-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cell:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(15,23,42,0.9);
+      border-color: rgba(56,189,248,.7);
+    }
+
+    .cell-category {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    .cell-text {
+      white-space: pre-wrap;
+      line-height: 1.3;
+      word-break: break-all;
+    }
+
+    .cell.selected {
+      background: radial-gradient(circle at top, rgba(56,189,248,.2), rgba(15,23,42,0.95));
+      border-color: var(--accent);
+      color: #ecfeff;
+      box-shadow: 0 0 0 1px rgba(34,211,238,0.35), 0 10px 22px rgba(8,47,73,0.9);
+    }
+
+    .cell.selected::after {
+      content: "✔";
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      font-size: 11px;
+      color: var(--accent);
+    }
+
+    .cell.center {
+      border-style: dashed;
+      border-color: rgba(148,163,184,0.8);
+      background: radial-gradient(circle at center, rgba(39,39,42,0.7), #020617);
+    }
+
+    .board-footer {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--muted);
+      position: relative;
+      z-index: 1;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .bingo-count {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 14px;
+      margin-left: 4px;
+    }
+
+    .board-footer button {
+      background: transparent;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      color: var(--muted);
+      padding: 4px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .board-footer button:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* 右側：說明區 */
+
+    .panel {
+      background: linear-gradient(145deg,#020617,#020b1b);
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      box-shadow: 0 22px 36px rgba(15,23,42,0.85);
+      padding: 14px 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+      min-height: 260px;
+    }
+
+    .panel::before {
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background: radial-gradient(circle at 20% 0, rgba(168,85,247,0.2), transparent 60%);
+      opacity:.6;
+      pointer-events:none;
+    }
+
+    .panel-header {
+      position: relative;
+      z-index: 1;
+    }
+
+    .panel-header h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .panel-header p {
+      margin: 4px 0 0;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .panel-empty {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 8px;
+    }
+
+    .panel-empty .icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 0, rgba(56,189,248,.6), transparent);
+      border: 1px solid rgba(148,163,184,.6);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin-bottom: 8px;
+      color: var(--accent);
+      font-size: 26px;
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .pill-tag {
+      padding: 2px 8px;
+      font-size: 10px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,.55);
+      color: var(--muted);
+    }
+
+    .panel-content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-rows: auto auto auto;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .subcard {
+      border-radius: 14px;
+      padding: 10px 10px 12px;
+      border: 1px solid rgba(30,64,175,0.6);
+      background: linear-gradient(135deg,#020617,#020c1b);
+      font-size: 12px;
+    }
+
+    .subcard.jp {
+      border-color: rgba(185,28,28,0.7);
+    }
+
+    .subcard-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .subcard-header span.flag {
+      font-size: 18px;
+    }
+
+    .subcard strong {
+      display:block;
+      margin-bottom: 3px;
+      color: #e5e7eb;
+    }
+
+    .subcard p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .panel-question {
+      border-radius: 12px;
+      padding: 8px 9px;
+      background: rgba(15,23,42,0.9);
+      border: 1px dashed rgba(148,163,184,0.7);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .panel-question span {
+      color: #facc15;
+      font-weight: 600;
+    }
+
+    .panel-active-title {
+      margin: 4px 0 4px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .label-chip {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      font-size: 10px;
+      color: var(--muted);
+      margin-right: 6px;
+    }
+
+    /* footer */
+
+    footer {
+      position: fixed;
+      inset-inline: 0;
+      bottom: 0;
+      padding: 4px 12px 6px;
+      background: linear-gradient(to top, rgba(15,23,42,0.96), rgba(15,23,42,0.85));
+      border-top: 1px solid #1f2937;
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+      backdrop-filter: blur(14px);
+    }
+
+    /* modal */
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.9);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+    }
+
+    .modal {
+      background: radial-gradient(circle at top, rgba(56,189,248,.2), #020617);
+      border-radius: 20px;
+      border: 1px solid rgba(34,211,238,0.5);
+      padding: 18px 18px 16px;
+      max-width: 360px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 24px 60px rgba(8,47,73,0.9);
+    }
+
+    .modal h3 {
+      margin: 8px 0 4px;
+      font-size: 18px;
+    }
+
+    .modal p {
+      margin: 0 0 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: rgba(15,23,42,0.95);
+      color: var(--text);
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(120deg,#22d3ee,#0ea5e9);
+      border-color: transparent;
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.05);
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="title-block">
+        <h1>電玩主角刻板印象 BINGO</h1>
+        <span>你的遊戲男主角，是不是也「中槍」了？</span>
+      </div>
+      <button class="pill" id="resetBtn">
+        ⟳ 重置賓果盤
+      </button>
+    </header>
+
+    <main>
+      <!-- 左側：賓果盤 -->
+      <section class="board-card" aria-label="刻板印象賓果盤">
+        <div class="board-header">
+          <div>
+            <h2>點選你看過的男性主角特徵</h2>
+            <p>回想最近玩過 / 看過的一位角色，勾選符合他的格子，看看他有多接近「陽剛模板」。</p>
+          </div>
+          <div class="badge">遊戲・動漫・電影皆可</div>
+        </div>
+        <div class="grid" id="bingoGrid">
+          <!-- cells 由 JS 產生 -->
+        </div>
+        <div class="board-footer">
+          <div>
+            目前連線數：
+            <span class="bingo-count" id="bingoCount">0</span>
+          </div>
+          <button id="hintBtn">說明：這是在看什麼？</button>
+        </div>
+      </section>
+
+      <!-- 右側：說明面板 -->
+      <aside class="panel" aria-label="刻板印象說明">
+        <div class="panel-header">
+          <h3>特徵分析資料庫</h3>
+          <p id="panelSubtitle">點選左側任一格子，看看這個特徵在不同文化裡，如何被包裝成「理所當然的男人樣子」。</p>
+        </div>
+
+        <div id="panelEmpty" class="panel-empty">
+          <div class="icon">🎮</div>
+          <div>先從左邊點一格看看。</div>
+          <p style="margin-top:6px;font-size:11px;color:var(--muted);max-width:260px;">
+            你會發現，美系硬漢、日系男主角，常常共用一套「情緒與外型模板」。這些模板，就是我們在課文裡說的性別腳本：它規定男人該怎麼看、怎麼動、可以表現哪些情緒。
+          </p>
+          <div class="pill-row">
+            <span class="pill-tag">#陽剛模板</span>
+            <span class="pill-tag">#有毒男子氣概</span>
+            <span class="pill-tag">#媒體識讀</span>
+          </div>
+        </div>
+
+        <div id="panelContent" class="panel-content" style="display:none;">
+          <div>
+            <span id="featureCategory" class="label-chip"></span>
+            <span id="featureName" class="panel-active-title"></span>
+          </div>
+
+          <div class="subcard">
+            <div class="subcard-header">
+              <span class="flag">🇺🇸</span>
+              <span>歐美硬派代表</span>
+            </div>
+            <strong id="exampleUS">—</strong>
+            <p id="noteUS">
+              —
+            </p>
+          </div>
+
+          <div class="subcard jp">
+            <div class="subcard-header">
+              <span class="flag">🇯🇵</span>
+              <span>日本動漫 / RPG 代表</span>
+            </div>
+            <strong id="exampleJP">—</strong>
+            <p id="noteJP">
+              —
+            </p>
+          </div>
+
+          <div class="panel-question">
+            <span>想一想：</span>如果一代又一代的作品，都把「好男人」畫成差不多的樣子，那些畫不進格子裡的男生──包括你身邊的人、包括你自己──會被看成什麼？他們的感受，有沒有被留位置？
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- BINGO modal -->
+  <div id="modalBackdrop" class="modal-backdrop">
+    <div class="modal">
+      <div style="font-size:30px;">🏆</div>
+      <h3>BINGO！你找到一條「陽剛模板」了。</h3>
+      <p>
+        當那麼多角色都長得差不多、行為也差不多時，代表我們其實在重複同一份「男性腳本」。<br>
+        待會閱讀白爾雅〈男子氣概有毒嗎？〉時，可以試著對照這些格子，看看哪些地方會傷到別人，也會傷到自己。
+      </p>
+      <div class="modal-buttons">
+        <button class="btn" id="closeModal">先關閉</button>
+        <button class="btn btn-primary" id="resetFromModal">重來一局</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    改編自 wundergeek「Male Protagonist Bingo」──僅供課堂媒體識讀與性別教育使用。
+  </footer>
+
+  <script>
+    // --- 資料定義 ---
+    const bingoData = [
+      { id: 1, text: "有軍銜或\\n軍人背景", category: "背景" },
+      { id: 2, text: "以頭銜或\\n代號代替姓名", category: "身分" },
+      { id: 3, text: "犯罪者", category: "背景" },
+      { id: 4, text: "私刑者", category: "行為" },
+      { id: 5, text: "大量\\n殺戮人類", category: "行為" },
+      { id: 6, text: "久經戰場的\\n老兵", category: "背景" },
+      { id: 7, text: "對殺戮\\n已麻木不仁", category: "心理" },
+      { id: 8, text: "獨來獨往的\\n獨行者", category: "性格" },
+      { id: 9, text: "冷漠疏離", category: "性格" },
+      { id: 10, text: "白人男性", category: "外貌" },
+      { id: 11, text: "面對危險仍有\\n黑色幽默", category: "性格" },
+      { id: 12, text: "手臂和大腿\\n一樣壯", category: "外貌" },
+      { id: 13, text: "反英雄\\n(Anti-Hero)", category: "核心", isCenter: true },
+      { id: 14, text: "以暴力維生\\n(傭兵/殺手)", category: "職業" },
+      { id: 15, text: "厭惡政治", category: "觀點" },
+      { id: 16, text: "槍，很多槍", category: "裝備" },
+      { id: 17, text: "憂鬱沉思", category: "心理" },
+      { id: 18, text: "有心理問題\\n或創傷", category: "心理" },
+      { id: 19, text: "穿戴\\n大量護甲", category: "裝備" },
+      { id: 20, text: "寫實硬派\\n(Gritty)", category: "風格" },
+      { id: 21, text: "禿頭或平頭", category: "外貌" },
+      { id: 22, text: "經常皺眉\\n板著臉", category: "表情" },
+      { id: 23, text: "擁有\\n超自然能力", category: "能力" },
+      { id: 24, text: "大量殺戮\\n非人類生物", category: "行為" },
+      { id: 25, text: "殺了我家人\\n我要報仇", category: "動機" }
+    ];
+
+    // 每一格的代表角色＋文化說明
+    const traitDetails = {
+      1: {
+        us: "《決勝時刻》歷代主角、美國隊長（《美國隊長》／《復仇者聯盟》）",
+        jp: "Solid Snake（《潛龍諜影》）、克勞德（《Final Fantasy VII》）",
+        usNote: "在美式作品裡，軍人背景被視為天然的正當性：只要掛上軍銜，暴力就變成「執行任務」，也讓「硬、忍耐、不退縮」被當成標準男人味。",
+        jpNote: "日系作品常把軍事身分和「過去的罪」綁在一起，主角一邊打仗、一邊贖罪，看似內心掙扎，實際上仍在強化「男人要扛戰爭」的想像。"
+      },
+      2: {
+        us: "Master Chief（《最後一戰》Halo）、Agent 47（《刺客任務》Hitman）",
+        jp: "Joker（《女神異聞錄5》）、Goblin Slayer（《哥布林殺手》）",
+        usNote: "沒有名字、只有頭銜或代號，讓角色變成「功能型工具人」：會殺、會打、不太需要情緒。這種設計把人縮減成職務，方便觀眾忽略他的脆弱。",
+        jpNote: "日系作品也愛用稱號（怪盜王、殺手、勇者）來包裝角色，讓男主角看起來酷到沒有日常生活，只剩任務與責任。"
+      },
+      3: {
+        us: "亞瑟（《碧血狂殺2》）、《Grand Theft Auto》系列主角群",
+        jp: "魯邦三世（《魯邦三世》）、宇智波佐助（《火影忍者》）",
+        usNote: "「犯罪者」男主角一方面違法，一方面卻被拍得很帥，暗示只要夠有魅力、夠有本事，違規也是男人的浪漫。",
+        jpNote: "日系作品常讓犯罪與悲慘身世綁在一起，觀眾被引導去同情他的痛，而不是好好討論他造成的傷害。"
+      },
+      4: {
+        us: "Batman（《蝙蝠俠》）、Punisher（《制裁者》）",
+        jp: "夜神月（《死亡筆記本》）、衛宮切嗣（《Fate/Zero》）",
+        usNote: "私刑英雄是在說：法律太慢，真正的男人要自己動手「清理世界」。這種敘事替暴力找道德理由，也把溫和與對話排除在男性形象之外。",
+        jpNote: "日系私刑者常搭配神之審判、命運選中的設定，讓角色看起來孤高又痛苦，但終究還是在強化：由男人決定誰該活、誰該死。"
+      },
+      5: {
+        us: "Kratos（《戰神》）、Doomguy（《毀滅戰士》DOOM）",
+        jp: "阿卡德（《HELLSING》）、艾連‧葉卡（《進擊的巨人》）",
+        usNote: "一次屠殺成群敵人，是動作遊戲的基本設計，也同時訓練我們習慣「男性主角就是屠殺機器」，殺戮能力比感受能力更重要。",
+        jpNote: "日系作品會加上「不得不殺」的道德包裝，但畫面仍然享受戰鬥快感。觀眾學到的是：男人可以為了信念把人類當作數字砍掉重練。"
+      },
+      6: {
+        us: "Marcus Fenix（《戰爭機器》）、喬爾（《最後生還者》）",
+        jp: "Guts（《烙印勇士》）、Big Boss（《潛龍諜影》系列）",
+        usNote: "老兵形象和「吃苦當吃補」綁在一起，暗示真正的男人要被戰爭磨爛，卻不能被看見崩潰，只能繼續往前打。",
+        jpNote: "日系老兵經常背著整部作品的悲劇，卻很少被允許真正求助或療傷，彷彿承受痛苦是男人的天職。"
+      },
+      7: {
+        us: "John Wick（《捍衛任務》）、Agent 47（《刺客任務》Hitman）",
+        jp: "殺生丸（《犬夜叉》）、典型冷感刺客角色",
+        usNote: "對殺戮麻木被拍成一種專業和酷，彷彿「不再感覺到什麼」就是成熟，這也在暗示男人不應該被情緒影響判斷。",
+        jpNote: "日系冷感角色常被粉絲稱讚「帥、穩、無表情的溫柔」，結果讓男性壓抑情緒變成一種理想，而不是需要被照顧的創傷反應。"
+      },
+      8: {
+        us: "Wolverine（《X戰警》）、Mandalorian（《曼達洛人》）",
+        jp: "流川楓（《灌籃高手》）、桐人（《刀劍神域》）",
+        usNote: "獨行俠形象強調：真正的男人不需要隊友、不需要求助。這讓「孤立自己」被浪漫化，卻忽略人本來就需要關係。",
+        jpNote: "日系作品裡的獨行主角，多半還是會被一群人圍繞著喜歡，傳遞出一個訊號：你要酷到不開口，別人自然來理解你。"
+      },
+      9: {
+        us: "Geralt（《巫師》）、Leon（《終極追殺令》）",
+        jp: "雲雀恭彌（《家庭教師HITMAN REBORN!》）、朽木白哉（《BLEACH》）",
+        usNote: "冷漠、少話、拒絕談感受，被當成專業與成熟的象徵，讓男主角可以逃避情緒勞動，而身邊的人負責理解他。",
+        jpNote: "日系冰山男常被配上粉絲或女角的投射視角，彷彿只要夠愛他，就能融化他的沈默，進一步合理化男性不主動表達情緒。"
+      },
+      10: {
+        us: "Nathan Drake（《秘境探險》）、Chris Redfield（《惡靈古堡》）",
+        jp: "愛德華‧艾力克（《鋼之鍊金術師》）、艾爾文‧史密斯（《進擊的巨人》）",
+        usNote: "在歐美遊戲市場，白人男性是默認主角模板，讓「誰可以當英雄」變成一種看不到的預設，其他族裔被推到配角或背景。",
+        jpNote: "即使是日系作品，很多 3A 級遊戲與動漫仍選擇歐美長相，等於把西方式陽剛外貌輸出成全球標準，弱化在地多元樣貌。"
+      },
+      11: {
+        us: "Deadpool（《惡棍英雄：死侍》）、Dante（《惡魔獵人》）",
+        jp: "坂田銀時（《銀魂》）、魯邦三世（《魯邦三世》）",
+        usNote: "一邊開玩笑、一邊殺人，可以讓觀眾暫時忘記暴力的重量，也讓「用幽默遮掩不安和恐懼」變成標準男人反應。",
+        jpNote: "日系吐槽型主角常把自己的疲累包裝成搞笑台詞，讓真正的情緒需求消失在笑點裡，習慣用玩笑跳過認真面對。"
+      },
+      12: {
+        us: "Hulk（《復仇者聯盟》）、《戰爭機器》角色們",
+        jp: "歐爾麥特（《我的英雄學院》）、戶愚呂弟（《幽遊白書》）",
+        usNote: "誇張的肌肉提醒我們：力量被放到最前面，聰明、溫柔、溝通都排在後面，男人的身體像武器庫而不是生活的身體。",
+        jpNote: "日系大隻男主角常被描寫成守護者或怪物，暗示肌肉越多，越不能輕易示弱，否則就會「不配」這個身材。"
+      },
+      13: {
+        us: "Venom（《猛毒》）、Max Payne（《江湖本色》）",
+        jp: "魯路修（《反叛的魯路修》）、貝吉塔（《七龍珠》）",
+        usNote: "反英雄在美式作品裡很受歡迎，因為他可以暴力、可以自私，卻仍然被包裝成比體制更有道德的男人。",
+        jpNote: "日系反英雄常在「守護重要之人」與「犧牲他人」之間搖擺，讓極端行為看起來像是深情，而不是需要被質疑的權力。"
+      },
+      14: {
+        us: "Boba Fett（《星際大戰》）、Deadshot（《自殺突擊隊》）",
+        jp: "羅羅亞·索隆（《航海王》）、奇犽（《獵人》）",
+        usNote: "以暴力維生讓角色看起來很自由，其實是把男人綁在「要靠打鬥才能證明自己的價值」這條單一路線上。",
+        jpNote: "日系角色即使是傭兵或殺手，常被描述為「內心其實很善良」，更模糊了暴力與溫柔之間的界線。"
+      },
+      15: {
+        us: "Solid Snake（《潛龍諜影》）對高層的不信任",
+        jp: "奈良鹿丸（《火影忍者》）、埼玉（《一拳超人》）",
+        usNote: "說自己不關心政治，看似中立，其實是在避免表態與責任，讓男主角永遠站在旁觀者位置批評世界。",
+        jpNote: "日系作品常把「不想理政治」寫成一種可愛的厭世，觀眾只看到他的疲累，卻不會想到權力結構如何影響他。"
+      },
+      16: {
+        us: "Punisher（《制裁者》）、Rambo（《藍波》）",
+        jp: "Vash（《槍神Trigun》）、阿卡德（《HELLSING》雙槍）",
+        usNote: "大量武器成為延伸自我的象徵，等於在說：「男人就是火力的總和」。談感情、談界線遠遠排在「射得準」之後。",
+        jpNote: "日系雙槍、神槍手角色常被描繪得優雅又浪漫，柔化了武器帶來的暴力現實，只剩帥氣的姿勢。"
+      },
+      17: {
+        us: "Batman（《蝙蝠俠》）、Cloud（《Final Fantasy VII》）",
+        jp: "碇真嗣（《新世紀福音戰士》）、金木研（《東京喰種》）",
+        usNote: "憂鬱沉思被視為「有深度」，卻很少真的帶到尋求協助或治療，讓男人的痛停留在帥氣陰影裡，而不是走向修復。",
+        jpNote: "日系苦痛主角很擅長內心獨白，卻往往將痛苦變成成長燃料，而不是提醒我們：有時候需要的是好好活下去，而不是再戰一次。"
+      },
+      18: {
+        us: "Moon Knight（《月光騎士》）、Joker（《蝙蝠俠》系列）",
+        jp: "金木研（《東京喰種》）、明日香（《新世紀福音戰士》）",
+        usNote: "心理問題在某些作品裡被用來增加角色魅力或瘋狂感，讓精神疾病變成戲劇效果，而不是需要被理解與照顧的狀態。",
+        jpNote: "日系角色的創傷常被用來合理化暴走或破壞，彷彿「受過傷的人」傷人是可以被原諒的。這也會影響我們對身邊創傷者的想像。"
+      },
+      19: {
+        us: "Iron Man（《鋼鐵人》）、Master Chief（《最後一戰》Halo）",
+        jp: "各式鋼彈駕駛員（《機動戰士鋼彈》系列）、哥布林殺手（《哥布林殺手》）",
+        usNote: "厚重護甲代表「刀槍不入的男人」，看起來安全，其實也在暗示：真正的男人不用被理解，他只要負責扛子彈。",
+        jpNote: "日系作品裡，盔甲與機甲往往藏著主人公的恐懼與無力，卻仍然被描寫成華麗的外殼，遮住了他需要支持的現實。"
+      },
+      20: {
+        us: "《最後生還者》、Batman Arkham 系列（《蝙蝠俠：阿卡漢》）",
+        jp: "《進擊的巨人》後期、《北斗神拳》",
+        usNote: "所謂「寫實硬派」，常意味著世界很殘酷、只有暴力與犧牲。男人被要求在這種世界裡撐住，否則就顯得軟弱。",
+        jpNote: "日系硬派世界觀常反覆強調「弱者會死」，逼男主角越來越狠，也讓觀眾把溫柔與猶豫當成不合時宜。"
+      },
+      21: {
+        us: "Kratos（《戰神》）、Hitman（《刺客任務》Hitman）",
+        jp: "埼玉（《一拳超人》）、克林（《七龍珠》）",
+        usNote: "禿頭或平頭容易和「狠角色」「不苟言笑」連結，延續軍人、囚犯、殺手的視覺語言，讓某種男性外貌直接被貼上暴力標籤。",
+        jpNote: "日系光頭角色常作為搞笑或怪力角色，卻很少是細膩的情感主角，限制了這種外型可以承載的故事範圍。"
+      },
+      22: {
+        us: "Batman（《蝙蝠俠》）、Geralt（《巫師》）",
+        jp: "空條承太郎（《JOJO 的奇妙冒險》）、宇智波斑（《火影忍者》）",
+        usNote: "永遠板著臉，讓「不笑」變成權威的象徵。久而久之，我們會把能自在表情、會露出害怕的男性看成不夠男人。",
+        jpNote: "日系角色的皺眉常被畫成帥氣標誌，讓情緒表達被壓縮成幾個固定表情，真正的脆弱被鎖在分鏡之外。"
+      },
+      23: {
+        us: "Superman（《超人》）、Spider-Man（《蜘蛛人》）",
+        jp: "孫悟空（《七龍珠》）、蒙其·D·魯夫（《航海王》）、替身使者們（《JOJO 的奇妙冒險》）",
+        usNote: "超能力放大的是「一個人解決一切」的幻想，忽略現實裡多數問題都需要合作，而不是靠某個超強男人單槍匹馬。",
+        jpNote: "日系少年漫畫把力量與友情綁在一起，但最終仍是主角靠開掛逆轉局勢，延續了「核心男主角」壓過所有人的結局。"
+      },
+      24: {
+        us: "Doomguy（《毀滅戰士》DOOM）、Isaac（《絕命異次元》Dead Space）",
+        jp: "竈門炭治郎（《鬼滅之刃》）、調查兵團成員們（《進擊的巨人》）",
+        usNote: "只要把敵人設計成「非人類」，玩家就能放心屠殺，順便練習對暴力麻痺，而不會去想像被打倒的一方的感受。",
+        jpNote: "日系作品也常用鬼、巨人、怪物取代人類敵人，但畫面一樣血腥。這讓我們習慣把某些存在整體排除在「值得同理的人」之外。"
+      },
+      25: {
+        us: "Punisher（《制裁者》）、Max Payne（《江湖本色》）",
+        jp: "宇智波佐助（《火影忍者》）、酷拉皮卡（《獵人》）",
+        usNote: "復仇動機很容易獲得同情，卻也在告訴觀眾：真正的男人遇到創傷，最自然的反應是「回擊」，而不是療傷或放下。",
+        jpNote: "日系復仇者常被描寫成越走越偏的悲劇英雄，彷彿不報復就對不起逝去的人，也忽略了許多男性其實想選擇不同的活法。"
+      }
+    };
+
+    // --- 狀態 ---
+    let selected = new Set();
+    let bingoLines = 0;
+    let modalShown = false;
+
+    // DOM 參照
+    const gridEl = document.getElementById("bingoGrid");
+    const bingoCountEl = document.getElementById("bingoCount");
+    const resetBtn = document.getElementById("resetBtn");
+    const hintBtn = document.getElementById("hintBtn");
+    const panelEmpty = document.getElementById("panelEmpty");
+    const panelContent = document.getElementById("panelContent");
+    const featureCategory = document.getElementById("featureCategory");
+    const featureName = document.getElementById("featureName");
+    const exampleUS = document.getElementById("exampleUS");
+    const exampleJP = document.getElementById("exampleJP");
+    const noteUS = document.getElementById("noteUS");
+    const noteJP = document.getElementById("noteJP");
+    const modalBackdrop = document.getElementById("modalBackdrop");
+    const closeModalBtn = document.getElementById("closeModal");
+    const resetFromModalBtn = document.getElementById("resetFromModal");
+
+    // --- 初始化賓果盤 ---
+    function createGrid() {
+      gridEl.innerHTML = "";
+      bingoData.forEach(item => {
+        const btn = document.createElement("button");
+        btn.className = "cell" + (item.isCenter ? " center" : "");
+        btn.type = "button";
+        btn.dataset.id = item.id;
+        btn.innerHTML = `
+          <div class="cell-category">${item.category}</div>
+          <div class="cell-text">${item.text.replace(/\\n/g,"<br>")}</div>
+        `;
+        btn.addEventListener("click", () => toggleCell(item.id, btn));
+        gridEl.appendChild(btn);
+      });
+    }
+
+    // --- 切換格子選取 ---
+    function toggleCell(id, element) {
+      if (selected.has(id)) {
+        selected.delete(id);
+        element.classList.remove("selected");
+      } else {
+        selected.add(id);
+        element.classList.add("selected");
+      }
+      updatePanel(id);
+      updateBingo();
+    }
+
+    // --- 更新右側說明 ---
+    function updatePanel(id) {
+      const cellData = bingoData.find(item => item.id === id);
+      const detail = traitDetails[id];
+
+      panelEmpty.style.display = "none";
+      panelContent.style.display = "grid";
+
+      featureCategory.textContent = cellData.category;
+      featureName.textContent = cellData.text.replace(/\\n/g,"");
+
+      if (detail) {
+        exampleUS.textContent = detail.us;
+        exampleJP.textContent = detail.jp;
+        noteUS.textContent = detail.usNote;
+        noteJP.textContent = detail.jpNote;
+      } else {
+        exampleUS.textContent = "（暫無範例）";
+        exampleJP.textContent = "（暫無範例）";
+        noteUS.textContent = "這個特徵在不同文化裡，也常被用來描繪特定的男性樣板。";
+        noteJP.textContent = "你可以試著想一想：你看過的作品，是怎麼處理這個設定的？";
+      }
+    }
+
+    // --- 檢查連線 ---
+    function updateBingo() {
+      const s = selected;
+      const size = 5;
+      let lines = 0;
+
+      // rows
+      for (let r = 0; r < size; r++) {
+        let ok = true;
+        for (let c = 0; c < size; c++) {
+          const id = r * size + c + 1;
+          if (!s.has(id)) { ok = false; break; }
+        }
+        if (ok) lines++;
+      }
+
+      // cols
+      for (let c = 0; c < size; c++) {
+        let ok = true;
+        for (let r = 0; r < size; r++) {
+          const id = r * size + c + 1;
+          if (!s.has(id)) { ok = false; break; }
+        }
+        if (ok) lines++;
+      }
+
+      // diag
+      const diag1 = [1,7,13,19,25].every(id => s.has(id));
+      const diag2 = [5,9,13,17,21].every(id => s.has(id));
+      if (diag1) lines++;
+      if (diag2) lines++;
+
+      // 若新連線數變多且還沒跳過窗，就顯示
+      if (lines > 0 && lines > bingoLines && !modalShown) {
+        showModal();
+      }
+
+      bingoLines = lines;
+      bingoCountEl.textContent = String(lines);
+    }
+
+    function showModal() {
+      modalShown = true;
+      modalBackdrop.style.display = "flex";
+    }
+
+    function hideModal() {
+      modalBackdrop.style.display = "none";
+    }
+
+    function resetAll() {
+      selected = new Set();
+      bingoLines = 0;
+      modalShown = false;
+      bingoCountEl.textContent = "0";
+      createGrid();
+      panelContent.style.display = "none";
+      panelEmpty.style.display = "flex";
+    }
+
+    // --- 事件 ---
+    resetBtn.addEventListener("click", resetAll);
+    hintBtn.addEventListener("click", () => {
+      alert("這個賓果盤是用來整理「遊戲與動漫裡常見的男性主角樣板」。\n我們不是在罵某一個角色，而是想看見：媒體其實一直在替男性寫劇本，決定男人可以怎麼表現，也悄悄限制了男人能感受到什麼。");
+    });
+    closeModalBtn.addEventListener("click", hideModal);
+    resetFromModalBtn.addEventListener("click", () => {
+      hideModal();
+      resetAll();
+    });
+
+    // --- 啟動 ---
+    createGrid();
+  </script>
+</body>
+</html>
