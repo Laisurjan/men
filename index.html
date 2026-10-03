@@ -820,6 +820,69 @@
       .reading ol { columns: 1; }
     }
 
+    /* 帶著問題讀樂府詩 */
+    .reading #openPoemBtn { margin: .2em 0 .4em; }
+    .modal.poem { max-width: min(1240px, 96vw); text-align: left; }
+    /* 大視窗用不透明底色，避免後面的盤面文字透出來 */
+    .modal.poem, .modal.reading { background: radial-gradient(circle at top, #0b2a40, #020617); }
+    .poem h3 { text-align: center; }
+    .q-row { display: flex; flex-wrap: wrap; gap: 8px; margin: .6em 0; }
+    .q-row button {
+      border: 1px solid rgba(148,163,184,0.6);
+      background: transparent;
+      color: var(--text);
+      border-radius: 999px;
+      padding: .35em .9em;
+      font-size: clamp(12.5px, 1.2vw, 21px);
+      cursor: pointer;
+    }
+    .q-row button[aria-pressed="true"] {
+      background: #facc15;
+      border-color: #facc15;
+      color: #1c1917;
+      font-weight: 700;
+    }
+    .q-answer {
+      border: 1px dashed rgba(250,204,21,0.6);
+      border-radius: 12px;
+      padding: .6em .9em;
+      margin-bottom: .8em;
+    }
+    .q-answer[hidden] { display: none; }
+    .poem .q-answer p { margin: 0; color: var(--text); font-size: clamp(13px, 1.3vw, 23px); line-height: 1.6; }
+    .poem .q-answer p.modern { margin-top: .35em; color: #9aa6b8; }
+    .q-answer .tag {
+      display: inline-block;
+      margin-right: .6em;
+      padding: 0 .6em;
+      border-radius: 999px;
+      background: #facc15;
+      color: #1c1917;
+      font-size: .78em;
+      font-weight: 700;
+    }
+    .q-answer .modern .tag { background: transparent; border: 1px solid rgba(148,163,184,0.6); color: var(--muted); }
+    .poems { display: grid; grid-template-columns: 1fr 1fr; gap: 0 clamp(16px, 3vw, 56px); }
+    .poems h4 { margin: 0 0 .4em; color: var(--accent); font-size: clamp(14px, 1.5vw, 25px); }
+    .poems h4 small { margin-left: .6em; padding: 0 .4em; border-radius: 6px; color: var(--muted); font-weight: 400; font-size: .8em; }
+    .poems .line {
+      margin: 0;
+      padding: 0 .4em;
+      border-radius: 6px;
+      color: #cbd5e1;
+      font-family: "DFKai-SB", "BiauKai", "Kaiti TC", "KaiTi", serif;
+      font-size: clamp(15px, 1.45vw, 26px);
+      line-height: 1.65;
+      transition: color .2s ease, background .2s ease;
+    }
+    .poems .line.stanza { margin-top: .5em; }
+    .poems.asking .line { color: #5b6677; }
+    .poems.asking .hl { color: #fff; background: rgba(250,204,21,0.22); }
+    .poems.asking h4 small.hl { color: #facc15; }
+    @media (max-width: 840px) {
+      .poems { grid-template-columns: 1fr; gap: 1em 0; }
+    }
+
     /* 操作引導：畫面下方的提示列＋目前該操作的區塊外框 */
     .guide {
       position: fixed;
@@ -1086,9 +1149,29 @@
         <li>誰的情感被說出來？誰的情感被他人代言？</li>
         <li>男性與女性是否被放在不同的位置？</li>
       </ol>
+      <button type="button" class="btn btn-primary" id="openPoemBtn">用這六個問題讀這兩首詩 →</button>
 
       <div class="modal-buttons">
         <button class="btn btn-primary" id="closeReadingModal">回到賓果</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 帶著問題讀樂府詩：課文依龍騰版《技高國文 1》第九課 -->
+  <div id="poemModalBackdrop" class="modal-backdrop">
+    <div class="modal poem">
+      <h3>帶著問題讀樂府詩</h3>
+      <p class="modal-small">點一個問題，相關的詩句會亮起來。這些是提問，不是答案：讀古典不是用現代標準批判古人，而是看見文學如何反映文化。</p>
+      <div class="q-row" id="poemQuestions"></div>
+      <div class="q-answer" id="poemAnswer" hidden>
+        <p class="ask"><span class="tag">追問</span><span id="poemAsk"></span></p>
+        <p class="modern"><span class="tag">古今對照</span><span id="poemModern"></span></p>
+      </div>
+      <div class="poems" id="poems"></div>
+      <p class="modal-small">課文依龍騰版《技高國文 1》第九課〈樂府詩選〉。</p>
+      <div class="modal-buttons">
+        <button class="btn" id="poemToReading">回到延伸閱讀</button>
+        <button class="btn btn-primary" id="closePoemModal">回到賓果</button>
       </div>
     </div>
   </div>
@@ -1573,7 +1656,8 @@
       bingo: $("modalBackdrop"),
       quote: $("quoteModalBackdrop"),
       hint: $("hintModalBackdrop"),
-      reading: $("readingModalBackdrop")
+      reading: $("readingModalBackdrop"),
+      poem: $("poemModalBackdrop")
     };
 
     // 多段文字寫入同一個 <p>，段落間以 <br> 分隔
@@ -1934,6 +2018,127 @@
       openModal("reading");
     }
 
+    // --- 帶著問題讀樂府詩：六個提問各自點亮相關詩句 ---
+    // lines 的 q 是這一聯對應的提問編號；stanza 表示課本分段的起點
+    const poems = [
+      {
+        title: "飲馬長城窟行",
+        author: "古辭，作者不詳",
+        authorQ: [1],
+        lines: [
+          { t: "青青河畔草，綿綿思遠道。", q: [3], stanza: true },
+          { t: "遠道不可思，宿昔夢見之。", q: [] },
+          { t: "夢見在我傍，忽覺在他鄉；", q: [1] },
+          { t: "他鄉各異縣，展轉不相見。", q: [4] },
+          { t: "枯桑知天風，海水知天寒。", q: [], stanza: true },
+          { t: "入門各自媚，誰肯相為言！", q: [] },
+          { t: "客從遠方來，遺我雙鯉魚。", q: [4, 6], stanza: true },
+          { t: "呼兒烹鯉魚，中有尺素書。", q: [] },
+          { t: "長跪讀素書，書中竟何如？", q: [] },
+          { t: "上言加餐食，下言長相憶。", q: [5] }
+        ]
+      },
+      {
+        title: "長干行",
+        author: "李白",
+        authorQ: [1, 5],
+        lines: [
+          { t: "妾髮初覆額，折花門前劇。", q: [1], stanza: true },
+          { t: "郎騎竹馬來，遶牀弄青梅。", q: [] },
+          { t: "同居長干里，兩小無嫌猜。", q: [] },
+          { t: "十四為君婦，羞顏未嘗開。", q: [2], stanza: true },
+          { t: "低頭向暗壁，千喚不一回。", q: [2] },
+          { t: "十五始展眉，願同塵與灰。", q: [], stanza: true },
+          { t: "常存抱柱信，豈上望夫臺？", q: [3] },
+          { t: "十六君遠行，瞿塘灩澦堆。", q: [4, 6], stanza: true },
+          { t: "五月不可觸，猿聲天上哀。", q: [] },
+          { t: "門前遲行跡，一一生綠苔。", q: [4], stanza: true },
+          { t: "苔深不能掃，落葉秋風早。", q: [] },
+          { t: "八月蝴蝶來，雙飛西園草。", q: [] },
+          { t: "感此傷妾心，坐愁紅顏老。", q: [2] },
+          { t: "早晚下三巴，預將書報家。", q: [], stanza: true },
+          { t: "相迎不道遠，直至長風沙。", q: [6] }
+        ]
+      }
+    ];
+
+    const poemQuestions = [
+      {
+        q: "誰在說話？",
+        ask: "兩首詩都由女性的「我」「妾」開口。那麼，寫下這些句子的人是誰？",
+        modern: "賓果盤上那些評語，又是誰說的、站在誰的位置說？"
+      },
+      {
+        q: "誰被觀看？",
+        ask: "詩裡細細描寫的是誰的神情與容貌？另一個人長什麼樣子，詩有寫嗎？",
+        modern: "女性視角第 10 格：要白、要瘦，才「像女主角」。"
+      },
+      {
+        q: "誰被期待等待？",
+        ask: "「抱柱信」的原典是男子尾生守約。在這首詩裡，守著信約、可能登上望夫臺的是誰？",
+        modern: "女性視角第 25 格：她被期待的是原諒，以及快點走出來。"
+      },
+      {
+        q: "誰可以行動？誰只能等待？",
+        ask: "一個人的句子裡是遠行、險灘和他鄉，另一個人的句子裡是門前的青苔。兩個人的活動範圍差了多少？",
+        modern: "男性視角第 8 格「獨行者」、第 6 格「老兵」：遠行的人成了故事的主角。"
+      },
+      {
+        q: "誰的情感被說出來？誰被代言？",
+        ask: "丈夫的心意只出現在信裡的兩句話。而〈長干行〉裡女子的千言萬語，是李白替她寫的。這算是誰的聲音？",
+        modern: "男性視角第 9 格「冷漠疏離」：話少的人，旁人會主動去理解他。"
+      },
+      {
+        q: "男女是否被放在不同的位置？",
+        ask: "她說願意迎到七百里外的長風沙；而他去的是三峽的瞿塘。同樣是出門，兩個人走的路有什麼不同？",
+        modern: "回到賓果盤：同一個特質，為什麼換了性別就換了說法？"
+      }
+    ];
+
+    function buildPoems() {
+      poems.forEach(poem => {
+        const col = document.createElement("div");
+        const head = document.createElement("h4");
+        head.textContent = "〈" + poem.title + "〉";
+        const author = document.createElement("small");
+        author.textContent = poem.author;
+        author.dataset.q = poem.authorQ.join(" ");
+        head.appendChild(author);
+        col.appendChild(head);
+        poem.lines.forEach(line => {
+          const el = document.createElement("p");
+          el.className = "line" + (line.stanza ? " stanza" : "");
+          el.textContent = line.t;
+          el.dataset.q = line.q.join(" ");
+          col.appendChild(el);
+        });
+        $("poems").appendChild(col);
+      });
+
+      poemQuestions.forEach((item, i) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = (i + 1) + ". " + item.q;
+        btn.setAttribute("aria-pressed", "false");
+        btn.addEventListener("click", () => askPoem(i + 1));
+        $("poemQuestions").appendChild(btn);
+      });
+    }
+
+    function askPoem(n) {
+      const item = poemQuestions[n - 1];
+      [...$("poemQuestions").children].forEach((btn, i) => {
+        btn.setAttribute("aria-pressed", String(i === n - 1));
+      });
+      $("poems").classList.add("asking");
+      $("poems").querySelectorAll("[data-q]").forEach(el => {
+        el.classList.toggle("hl", el.dataset.q.split(" ").includes(String(n)));
+      });
+      setRich($("poemAsk"), item.ask);
+      $("poemModern").textContent = item.modern;
+      $("poemAnswer").hidden = false;
+    }
+
     // --- 事件 ---
     $("resetBtn").addEventListener("click", resetAll);
     $("hintBtn").addEventListener("click", () => openModal("hint"));
@@ -1950,6 +2155,15 @@
       openReading();
     });
     $("closeReadingModal").addEventListener("click", () => closeModal("reading"));
+    $("openPoemBtn").addEventListener("click", () => {
+      closeModal("reading");
+      openModal("poem");
+    });
+    $("poemToReading").addEventListener("click", () => {
+      closeModal("poem");
+      openModal("reading");
+    });
+    $("closePoemModal").addEventListener("click", () => closeModal("poem"));
     $("guideSkip").addEventListener("click", () => {
       markGuideDone();
       showGuideStep(0);
@@ -1971,6 +2185,7 @@
     // --- 啟動 ---
     applyModeText();
     createGrid();
+    buildPoems();
 
     // 第一次進來先說明這頁在做什麼；看過或略過後不再自動跳出
     let guideDone = false;
