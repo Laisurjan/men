@@ -789,6 +789,37 @@
       color: #fda4af;
     }
 
+    /* 延伸閱讀 */
+    .footer-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    /* 延伸閱讀按鈕：平時就用強調色；達成條件後亮起並發光，點開過才恢復 */
+    #readingBtn { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+    body[data-mode="female"] #readingBtn { border-color: #fb7185; color: #fda4af; }
+    #readingBtn.lit,
+    body[data-mode="female"] #readingBtn.lit {
+      background: #facc15;
+      border-color: #facc15;
+      color: #1c1917;
+      animation: readingGlow 1.6s ease-out infinite;
+    }
+    @keyframes readingGlow {
+      0% { box-shadow: 0 0 0 0 rgba(250,204,21,0.65); }
+      100% { box-shadow: 0 0 0 14px rgba(250,204,21,0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #readingBtn.lit { animation: none; box-shadow: 0 0 0 3px rgba(250,204,21,0.45); }
+    }
+    .modal.reading { max-width: min(920px, 94vw); text-align: left; }
+    .modal, .panel { scrollbar-color: #475569 transparent; }
+    .reading h3 { text-align: center; }
+    .reading h4 { margin: 1em 0 .3em; color: var(--accent); font-size: clamp(14px, 1.5vw, 25px); }
+    .reading .src { margin: 0 0 .2em; color: var(--text); font-size: clamp(13px, 1.3vw, 22px); }
+    .reading .ask { margin: 0 0 .7em; color: #9aa6b8; font-size: clamp(12.5px, 1.2vw, 20px); }
+    .reading ol { margin: 0 0 .6em; padding-left: 1.4em; color: var(--text); font-size: clamp(12.5px, 1.2vw, 20px); line-height: 1.6; columns: 2; }
+    .reading .modal-buttons { margin-top: 1em; }
+    @media (max-width: 840px) {
+      .reading ol { columns: 1; }
+    }
+
     /* 操作引導：畫面下方的提示列＋目前該操作的區塊外框 */
     .guide {
       position: fixed;
@@ -926,7 +957,10 @@
             目前連線數：
             <span class="bingo-count" id="bingoCount">0</span>
           </div>
-          <button id="hintBtn">說明：這是在看什麼？</button>
+          <div class="footer-actions">
+            <button id="hintBtn">說明：這是在看什麼？</button>
+            <button id="readingBtn">📖 延伸閱讀：三節課讀什麼</button>
+          </div>
         </div>
       </section>
 
@@ -1004,7 +1038,8 @@
       </ol>
       <div class="modal-buttons">
         <button class="btn" id="closeModal">先關閉</button>
-        <button class="btn btn-primary" id="resetFromModal">重來一局</button>
+        <button class="btn" id="resetFromModal">重來一局</button>
+        <button class="btn btn-primary" id="readingFromModal">📖 延伸閱讀</button>
       </div>
     </div>
   </div>
@@ -1021,6 +1056,39 @@
       <p id="quoteMeta" class="modal-small"></p>
       <div class="modal-buttons">
         <button class="btn btn-primary" id="closeQuoteModal">我想再看看賓果</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 延伸閱讀 modal：書目與提問皆取自教案 -->
+  <div id="readingModalBackdrop" class="modal-backdrop">
+    <div class="modal reading">
+      <h3>延伸閱讀｜三節課讀什麼</h3>
+
+      <h4>第一節　我們眼中的「他」</h4>
+      <p class="src">白爾雅〈男子氣概有毒嗎？從厭女、反同到解毒〉，《性別平等教育季刊》第 86 期（2019）</p>
+      <p class="ask">邊讀邊圈：男性被期待的行為、不被允許的情緒、這套期待造成的傷害。</p>
+
+      <h4>第二節　被凝視的「她」</h4>
+      <p class="src">吳曉樂〈習得復忘掉〉，《可是我偏偏不喜歡》（網路與書，2019）</p>
+      <p class="ask">「好意提醒」為什麼也可能成為規訓？「裁切自己」裁掉的是什麼？</p>
+      <p class="src">西蒙．波娃《第二性》（邱瑞鑾譯，貓頭鷹，2013）</p>
+      <p class="ask">「人不是生而為女人，而是成為女人。」</p>
+
+      <h4>第三節　回到樂府詩</h4>
+      <p class="src">〈飲馬長城窟行〉、〈長干行〉（龍騰版《技高國文 1》第九課〈樂府詩選〉）</p>
+      <p class="ask">帶著六個問題讀：</p>
+      <ol>
+        <li>誰在說話？</li>
+        <li>誰被觀看？</li>
+        <li>誰被期待等待？</li>
+        <li>誰可以行動？誰只能等待？</li>
+        <li>誰的情感被說出來？誰的情感被他人代言？</li>
+        <li>男性與女性是否被放在不同的位置？</li>
+      </ol>
+
+      <div class="modal-buttons">
+        <button class="btn btn-primary" id="closeReadingModal">回到賓果</button>
       </div>
     </div>
   </div>
@@ -1469,7 +1537,7 @@
         boardDesc: "想像畫面裡主角換成一位女生，看看同樣的條件出現在她身上時，會被怎麼看待。",
         panelTitle: "同一特質，兩種評語",
         panelSubtitle: "點選左側任一格子，比較同一個特質放在男性與女性身上時，得到的評語有什麼不同。",
-        question: "這些評語是我們要分析的對象，不是事實，也不是拿來貼在同學身上的標籤。同一個特質，為什麼換了性別就換了說法？哪一句你聽過，或自己說過？",
+        question: "這些評語是我們要分析的對象，不是事實，也不是拿來貼在同學身上的標籤。同一個特質，為什麼換了性別就換了說法？哪一句你聽過，或自己說過？如果要重寫，你會怎麼說？",
         emptyMain: "先從左邊任選一格，換個角度看看。",
         emptySub: "同一個特質，放在他身上是稱讚，放在她身上卻常變成批評。這個模式把兩種評語並排，讓我們看見平常很少被說出口的雙重標準。",
         tags: ["#女生被怎麼看", "#性別雙標", "#性別腳本"],
@@ -1504,7 +1572,8 @@
     const modals = {
       bingo: $("modalBackdrop"),
       quote: $("quoteModalBackdrop"),
-      hint: $("hintModalBackdrop")
+      hint: $("hintModalBackdrop"),
+      reading: $("readingModalBackdrop")
     };
 
     // 多段文字寫入同一個 <p>，段落間以 <br> 分隔
@@ -1652,6 +1721,7 @@
       board.lines = lines;
       bingoCountEl.textContent = String(lines);
       renderSummary();
+      updateReadingLight();
     }
 
     // --- 勾選小結：把 14 種格子分類併成四大類，看勾選集中在哪裡 ---
@@ -1824,7 +1894,7 @@
       if (step > 3) {
         // 三步完成：給探索建議並連回課堂文本，停留一段時間後自動淡出
         $("guideStep").textContent = "探索";
-        $("guideText").textContent = "多勾幾格試著連線，兩種視角都看看。之後讀白爾雅〈男子氣概有毒嗎？〉、吳曉樂〈習得復忘掉〉時，再回來對照這些格子。";
+        $("guideText").textContent = "多勾幾格試著連線，兩種視角都看看。右下的「延伸閱讀」亮起來了：三節課要讀的文本和提問都在裡面。";
         $("guideSkip").textContent = "知道了";
         markGuideDone();
         guideTimers.push(setTimeout(() => {
@@ -1849,6 +1919,21 @@
       else if (guideStep === 3 && event === "cell" && currentMode === "female") showGuideStep(4);
     }
 
+    // --- 延伸閱讀：連成一線，或兩個視角都看過，按鈕就亮起來；點開過才恢復 ---
+    let readingOpened = false;
+
+    function updateReadingLight() {
+      const achieved = state.male.lines > 0 || state.female.lines > 0 ||
+        (state.male.lastId !== null && state.female.lastId !== null);
+      if (achieved && !readingOpened) $("readingBtn").classList.add("lit");
+    }
+
+    function openReading() {
+      readingOpened = true;
+      $("readingBtn").classList.remove("lit");
+      openModal("reading");
+    }
+
     // --- 事件 ---
     $("resetBtn").addEventListener("click", resetAll);
     $("hintBtn").addEventListener("click", () => openModal("hint"));
@@ -1859,6 +1944,12 @@
       resetAll();
     });
     $("closeQuoteModal").addEventListener("click", () => closeModal("quote"));
+    $("readingBtn").addEventListener("click", openReading);
+    $("readingFromModal").addEventListener("click", () => {
+      closeModal("bingo");
+      openReading();
+    });
+    $("closeReadingModal").addEventListener("click", () => closeModal("reading"));
     $("guideSkip").addEventListener("click", () => {
       markGuideDone();
       showGuideStep(0);
