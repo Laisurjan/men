@@ -109,51 +109,32 @@
       white-space: nowrap;
     }
 
-    .icon-eye {
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.6);
-      background: radial-gradient(circle at 30% 0, rgba(248,250,252,0.2), transparent 60%);
+    .mode-switch {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      color: #e5e7eb;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      transition: border-color 0.2s ease, transform 0.15s ease;
-    }
-
-    .icon-eye::after {
-      content: "";
-      position: absolute;
-      width: 60%;
-      height: 60%;
-      border-radius: 50%;
+      border-radius: 999px;
       border: 1px solid rgba(148,163,184,0.5);
-      opacity: 0.4;
+      overflow: hidden;
     }
 
-    .icon-eye:hover {
-      border-color: var(--accent);
-      transform: translateY(-1px);
+    .mode-switch button {
+      background: transparent;
+      border: 0;
+      color: var(--muted);
+      padding: 6px 12px;
+      font-size: clamp(12px, 1vw, 15px);
+      cursor: pointer;
+      white-space: nowrap;
     }
 
-    .icon-eye span {
-      position: relative;
-      top: 0;
-      transition: transform 0.18s ease;
+    .mode-switch button[aria-pressed="true"] {
+      background: var(--accent-soft);
+      color: #ecfeff;
+      font-weight: 600;
     }
 
-    .icon-eye:hover span {
-      transform: translateY(1px);
-    }
-
-    .icon-eye[data-mode="female"] {
-      border-color: #fb7185;
-      background: radial-gradient(circle at 30% 0, rgba(248,113,113,0.3), transparent 60%);
+    body[data-mode="female"] .mode-switch button[aria-pressed="true"] {
+      background: rgba(248,113,113,0.25);
+      color: #fecaca;
     }
 
     main {
@@ -544,7 +525,11 @@
     }
 
     .subcard-header span.flag {
-      font-size: 18px;
+      font-size: .85em;
+      padding: 1px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      color: var(--muted);
     }
 
     .subcard strong {
@@ -709,6 +694,163 @@
     body[data-mode="female"] .btn:hover {
       border-color: #4ade80;
     }
+    .empty-sub {
+      margin-top: 6px;
+      color: var(--muted);
+      max-width: 30em;
+    }
+
+    .quote-orig {
+      font-style: italic;
+    }
+
+    .sheet-close {
+      display: none;
+    }
+
+    /* 投影優先：字級與格子隨視窗放大，寬螢幕一頁看完不必捲動 */
+    .app { max-width: none; width: min(1800px, 97vw); padding-top: 10px; }
+    header h1 { font-size: clamp(20px, 2.1vw, 36px); }
+    header span { font-size: clamp(12px, 1.2vw, 20px); }
+    .pill, .badge, .board-footer, .board-footer button, .mode-switch button { font-size: clamp(12px, 1.1vw, 19px); }
+    .board-header h2 { font-size: clamp(18px, 1.9vw, 32px); }
+    .board-header p { font-size: clamp(12px, 1.15vw, 19px); max-width: 34em; }
+    .cell { font-size: clamp(12px, 1.35vw, 25px); border-radius: 14px; }
+    .cell-category { font-size: clamp(10px, .95vw, 16px); }
+    .cell.selected::after { font-size: clamp(11px, 1.2vw, 20px); }
+    .bingo-count { font-size: clamp(14px, 1.6vw, 26px); }
+    .panel-header h3 { font-size: clamp(15px, 1.7vw, 28px); }
+    .panel-header p, .empty-sub { font-size: clamp(12px, 1.15vw, 19px); }
+    .panel-empty { font-size: clamp(14px, 1.4vw, 24px); }
+    .pill-tag, .label-chip { font-size: clamp(11px, 1vw, 17px); }
+    .subcard, .subcard-header { font-size: clamp(13px, 1.35vw, 24px); }
+    .subcard p, .panel-question { font-size: clamp(12.5px, 1.3vw, 23px); line-height: 1.55; color: #cbd5e1; }
+    .panel-active-title { font-size: clamp(14px, 1.7vw, 28px); }
+    .quote-strip { font-size: clamp(11.5px, 1.1vw, 19px); }
+    footer { font-size: clamp(10px, .85vw, 14px); }
+    .modal { max-width: min(760px, 92vw); max-height: 92vh; overflow-y: auto; padding: clamp(18px, 2vw, 36px); }
+    .modal h3 { font-size: clamp(18px, 2.1vw, 34px); }
+    .modal p { font-size: clamp(13px, 1.5vw, 26px); line-height: 1.6; }
+    .modal p.modal-small { font-size: clamp(11px, 1.1vw, 19px); }
+    .btn { font-size: clamp(12px, 1.3vw, 22px); padding: .45em 1em; }
+
+    @media (min-width: 841px) {
+      .cell { min-height: clamp(68px, 11.5vh, 150px); }
+      main { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); }
+    }
+
+    @media (max-width: 480px) {
+      .cell { font-size: 11px; }
+    }
+
+    /* 視覺層次：亮色只留給重點（角色名、引號內關鍵詞、已勾選的格子） */
+    .cell { color: #aeb9c9; }
+    .cell.selected { color: #fff; font-weight: 600; }
+    .panel-header h3 { color: var(--muted); font-weight: 600; letter-spacing: .08em; }
+    .panel-active-title { color: #fff; font-weight: 800; }
+    .subcard-header { color: var(--muted); font-weight: 500; font-size: clamp(11px, 1vw, 17px); }
+    .subcard strong { color: var(--accent); font-weight: 700; line-height: 1.4; margin-bottom: .35em; }
+    .subcard.jp strong { color: #fca5a5; }
+    body[data-mode="female"] .subcard strong { color: #93c5fd; }
+    body[data-mode="female"] .subcard.jp strong { color: #fda4af; }
+    .subcard p, .panel-question { color: #9aa6b8; }
+    .subcard p .key, .panel-question span.key { color: #f1f5f9; font-weight: 600; }
+
+    /* 操作引導：畫面下方的提示列＋目前該操作的區塊外框 */
+    .guide {
+      position: fixed;
+      left: 50%;
+      bottom: 40px;
+      transform: translateX(-50%);
+      z-index: 25;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      max-width: min(960px, 94vw);
+      padding: 10px 14px 10px 18px;
+      border-radius: 999px;
+      background: #facc15;
+      color: #1c1917;
+      font-weight: 600;
+      font-size: clamp(13px, 1.3vw, 22px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.55);
+    }
+    .guide[hidden] { display: none; }
+    .guide { transition: opacity .8s ease; }
+    .guide.fading { opacity: 0; }
+    .guide-step {
+      flex: none;
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: #1c1917;
+      color: #facc15;
+      font-size: .8em;
+    }
+    .guide button {
+      flex: none;
+      border: 1px solid rgba(28,25,23,0.5);
+      background: transparent;
+      color: inherit;
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: .8em;
+      cursor: pointer;
+    }
+    .guide-target {
+      outline: 3px solid #facc15;
+      outline-offset: 4px;
+      animation: guidePulse 1.4s ease-in-out infinite;
+    }
+    @keyframes guidePulse {
+      50% { outline-color: rgba(250,204,21,0.25); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .guide-target { animation: none; }
+    }
+    @media (max-width: 840px) {
+      .guide { border-radius: 16px; }
+      body.sheet-open .guide { top: 8px; bottom: auto; }
+    }
+
+    .hint-steps {
+      text-align: left;
+      margin: 0 0 12px;
+      padding-left: 1.4em;
+      color: var(--text);
+      font-size: clamp(13px, 1.4vw, 24px);
+      line-height: 1.6;
+    }
+
+    /* 手機：點格子後說明從畫面下方浮出，不必往下捲 */
+    @media (max-width: 840px) {
+      body.sheet-open .panel {
+        position: fixed;
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+        max-height: 46vh;
+        min-height: 0;
+        overflow-y: auto;
+        z-index: 20;
+      }
+      body.sheet-open .app { padding-bottom: 50vh; }
+      body.sheet-open .panel-header p { display: none; }
+      body.sheet-open .sheet-close {
+        display: block;
+        position: absolute;
+        top: 8px;
+        right: 10px;
+        z-index: 2;
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        border: 1px solid rgba(148,163,184,0.6);
+        background: transparent;
+        color: var(--text);
+        font-size: 18px;
+        cursor: pointer;
+      }
+    }
   </style>
 </head>
 <body data-mode="male">
@@ -719,9 +861,10 @@
         <span id="taglineText">你的遊戲男主角，是不是也「中槍」了？</span>
       </div>
       <div class="header-actions">
-        <button class="icon-eye" id="modeToggle" aria-label="切換性別視角" title="切換性別視角" data-mode="male">
-          <span>👁</span>
-        </button>
+        <div class="mode-switch" role="group" aria-label="切換性別視角">
+          <button type="button" id="modeMale" aria-pressed="true">男性視角</button>
+          <button type="button" id="modeFemale" aria-pressed="false">女性視角</button>
+        </div>
         <button class="pill" id="resetBtn">
           ⟳ 重置賓果盤
         </button>
@@ -754,6 +897,7 @@
 
       <!-- 右側：說明面板 -->
       <aside class="panel" aria-label="刻板印象說明">
+        <button type="button" class="sheet-close" id="sheetClose" aria-label="收起說明">×</button>
         <div class="panel-header">
           <h3 id="panelTitle">特徵分析資料庫</h3>
           <p id="panelSubtitle">點選左側任一格子，看看這個特徵在不同文化裡，如何被包裝成「理所當然的男人樣子」。</p>
@@ -762,7 +906,7 @@
         <div id="panelEmpty" class="panel-empty">
           <div class="icon">🎮</div>
           <div id="emptyMainText">先從左邊點一格看看。</div>
-          <p id="emptySubText" style="margin-top:6px;font-size:11px;color:var(--muted);max-width:260px;">
+          <p id="emptySubText" class="empty-sub">
             你會發現，美系硬漢、日系男主角，常常共用一套「情緒與外型模板」。這些模板，就是我們在課文裡說的性別腳本：它規定男人該怎麼看、怎麼動、可以表現哪些情緒。
           </p>
           <div class="pill-row">
@@ -780,7 +924,7 @@
 
           <div class="subcard">
             <div class="subcard-header">
-              <span class="flag" id="card1Flag">🇺🇸</span>
+              <span class="flag" id="card1Flag"></span>
               <span id="card1Title">歐美硬派代表</span>
             </div>
             <strong id="exampleUS">—</strong>
@@ -789,7 +933,7 @@
 
           <div class="subcard jp">
             <div class="subcard-header">
-              <span class="flag" id="card2Flag">🇯🇵</span>
+              <span class="flag" id="card2Flag"></span>
               <span id="card2Title">日本動漫 / RPG 代表</span>
             </div>
             <strong id="exampleJP">—</strong>
@@ -797,7 +941,7 @@
           </div>
 
           <div class="panel-question" id="panelQuestion">
-            <span>想一想：</span>如果一代又一代的作品，都把「好男人」畫成差不多的樣子，那些畫不進格子裡的男生──包括你身邊的人、包括你自己──會被看成什麼？他們的感受，有沒有被留位置？
+            <span>想一想：</span><span id="panelQuestionText" style="color:inherit;font-weight:inherit;"></span>
           </div>
 
           <div class="quote-strip" id="quoteStrip">
@@ -817,6 +961,12 @@
         當那麼多角色都長得幾乎一樣、行為也差不多時，代表我們其實在重複同一份「男性腳本」。<br>
         待會閱讀白爾雅〈男子氣概有毒嗎？〉時，可以試著對照這些格子，看看哪些地方會傷到別人，也會傷到自己。
       </p>
+      <p class="modal-small">帶著這三個問題完成出口單：</p>
+      <ol class="hint-steps">
+        <li>這個腳本期待這個性別「應該」成為什麼樣子？</li>
+        <li>這套期待可能限制了誰、傷害了誰？</li>
+        <li>如果可以重寫這個腳本，你會怎麼改寫？</li>
+      </ol>
       <div class="modal-buttons">
         <button class="btn" id="closeModal">先關閉</button>
         <button class="btn btn-primary" id="resetFromModal">重來一局</button>
@@ -828,19 +978,45 @@
   <div id="quoteModalBackdrop" class="modal-backdrop">
     <div class="modal quote-modal">
       <div style="font-size:30px;">📖</div>
-      <h3>有人把這種壓力說出來了。</h3>
+      <h3>換個聲音，聽聽她們怎麼說。</h3>
       <p id="quoteText">
         這裡會顯示一句名言。
       </p>
-      <p id="quoteMeta" style="font-size:11px;"></p>
+      <p id="quoteOrig" class="modal-small quote-orig"></p>
+      <p id="quoteMeta" class="modal-small"></p>
       <div class="modal-buttons">
         <button class="btn btn-primary" id="closeQuoteModal">我想再看看賓果</button>
       </div>
     </div>
   </div>
 
+  <!-- 操作引導 -->
+  <div class="guide" id="guide" role="status" hidden>
+    <span class="guide-step" id="guideStep"></span>
+    <span id="guideText"></span>
+    <button type="button" id="guideSkip">略過引導</button>
+  </div>
+
+  <!-- 說明 modal -->
+  <div id="hintModalBackdrop" class="modal-backdrop">
+    <div class="modal">
+      <div style="font-size:30px;">💡</div>
+      <h3>這是在看什麼？</h3>
+      <p id="hintText"></p>
+      <ol class="hint-steps">
+        <li>點選你看過的角色特徵，右側會出現代表角色與解讀。</li>
+        <li>連成一線就是 BINGO。</li>
+        <li>切換到「女性視角」，看同一特質換到她身上被怎麼說。</li>
+      </ol>
+      <p class="modal-small">本頁是國文課〈樂府詩選〉前導課程「重寫性別腳本」第一節的互動活動，操作約 10 分鐘。</p>
+      <div class="modal-buttons">
+        <button class="btn btn-primary" id="closeHintModal">開始操作</button>
+      </div>
+    </div>
+  </div>
+
   <footer>
-    改編自 wundergeek「Male Protagonist Bingo」──僅供課堂媒體識讀與性別教育使用。
+    改編自 Ash Kreider（wundergeek）〈Male Protagonist Bingo〉（2014），Go Make Me a Sandwich──僅供課堂媒體識讀與性別教育使用。
   </footer>
 
   <script>
@@ -889,7 +1065,7 @@
       },
       3: {
         us: "亞瑟（《碧血狂殺2》Red Dead Redemption 2）、《Grand Theft Auto》系列主角群",
-        jp: "黃昏（《SPY×FAMILY間諜家家酒》）、宇智波佐助（《火影忍者》）",
+        jp: "怪盜基德（《名偵探柯南》／《魔術快斗》）、宇智波佐助（《火影忍者》）",
         usNote: "「犯罪者」男主角一方面違法，一方面卻被拍得很帥，暗示只要夠有魅力、夠有本事，違規也是男人的浪漫。",
         jpNote: "日系作品常讓犯罪與悲慘身世綁在一起，觀眾被引導去同情他的痛，而不是好好討論他造成的傷害。"
       },
@@ -900,50 +1076,50 @@
         jpNote: "日系私刑者常搭配神之審判、命運選中的設定，讓角色看起來孤高又痛苦，但終究還是在強化：由男人決定誰該活、誰該死。"
       },
       5: {
-        us: "Kratos（《戰神》God of War）、Doomguy（《毀滅戰士》DOOM）",
+        us: "Kratos（《戰神》God of War）、B.J. Blazkowicz（《德軍總部》Wolfenstein）",
         jp: "阿卡德（《HELLSING》）、艾連‧葉卡（《進擊的巨人》）",
         usNote: "一次屠殺成群敵人，是動作遊戲的基本設計，也同時訓練我們習慣「男性主角就是屠殺機器」，殺戮能力比感受能力更重要。",
         jpNote: "日系作品會加上「不得不殺」的道德包裝，但畫面仍然享受戰鬥快感。觀眾學到的是：男人可以為了信念把人類當作數字砍掉重練。"
       },
       6: {
-        us: "Marcus Fenix（《戰爭機器》Gears of War）、喬爾（《最後生還者》The Last of Us）",
-        jp: "Guts（《烙印勇士》）、Big Boss（《潛龍諜影》系列）",
+        us: "Marcus Fenix（《戰爭機器》Gears of War）、普萊斯上尉（《決勝時刻：現代戰爭》Call of Duty: Modern Warfare）",
+        jp: "凱茲（《烙印勇士》）、Big Boss（《潛龍諜影》系列）",
         usNote: "老兵形象和「吃苦當吃補」綁在一起，暗示真正的男人要被戰爭磨爛，卻不能被看見崩潰，只能繼續往前打。",
         jpNote: "日系老兵經常背著整部作品的悲劇，卻很少被允許真正求助或療傷，彷彿承受痛苦是男人的天職。"
       },
       7: {
         us: "John Wick（《捍衛任務》）、Agent 47（《刺客任務》Hitman）",
-        jp: "殺生丸（《犬夜叉》）、典型冷感刺客角色",
+        jp: "殺生丸（《犬夜叉》）、庫洛洛（《獵人》）",
         usNote: "對殺戮麻木被拍成一種專業和酷，彷彿「不再感覺到什麼」就是成熟，這也在暗示男人不應該被情緒影響判斷。",
         jpNote: "日系冷感角色常被粉絲稱讚「帥、穩、無表情的溫柔」，結果讓男性壓抑情緒變成一種理想，而不是需要被照顧的創傷反應。"
       },
       8: {
         us: "Wolverine（《X戰警》X-Men）、Mandalorian（《曼達洛人》The Mandalorian）",
-        jp: "流川楓（《灌籃高手》）、里維兵長（《進擊的巨人》）",
+        jp: "流川楓（《灌籃高手》）、富岡義勇（《鬼滅之刃》）",
         usNote: "獨行俠形象強調：真正的男人不需要隊友、不需要求助。這讓「孤立自己」被浪漫化，卻忽略人本來就需要關係。",
         jpNote: "日系作品裡的獨行主角，多半還是會被一群人圍繞著喜歡，傳遞出一個訊號：你要酷到不開口，別人自然來理解你。"
       },
       9: {
-        us: "Leon（《終極追殺令》Léon: The Professional）、Rick Grimes（《陰屍路》The Walking Dead）",
-        jp: "雲雀恭彌（《家庭教師HITMAN REBORN!》）、境井仁（《對馬戰鬼》Ghost of Tsushima）",
+        us: "Leon（《終極追殺令》Léon: The Professional）、Daryl Dixon（《陰屍路》The Walking Dead）",
+        jp: "雲雀恭彌（《家庭教師HITMAN REBORN!》）、時透無一郎（《鬼滅之刃》）",
         usNote: "冷漠、少話、拒絕談感受，被當成專業與成熟的象徵，讓男主角可以逃避情緒勞動，而身邊的人負責理解他。",
-        jpNote: "日系與日式風格作品裡的冰山男，常被配上理解他的夥伴或愛慕者，彷彿只要有人願意解讀，他就不需要學習表達情緒。"
+        jpNote: "日系作品裡的冰山男，常被配上理解他的夥伴或愛慕者，彷彿只要有人願意解讀，他就不需要學習表達情緒。"
       },
       10: {
-        us: "Nathan Drake（《秘境探險》Uncharted）、Chris Redfield（《惡靈古堡》Resident Evil）",
-        jp: "愛德華‧艾力克（《鋼之鍊金術師》）、艾爾文‧史密斯（《進擊的巨人》）",
+        us: "Nathan Drake（《秘境探險》Uncharted）、喬爾（《最後生還者》The Last of Us）",
+        jp: "Chris Redfield（《惡靈古堡》Resident Evil）、愛德華‧艾力克（《鋼之鍊金術師》）",
         usNote: "在歐美遊戲市場，白人男性是默認主角模板，讓「誰可以當英雄」變成一種看不到的預設，其他族裔被推到配角或背景。",
         jpNote: "即使是日系作品，很多 3A 級遊戲與動漫仍選擇偏歐美的外貌，等於把西方式陽剛外貌輸出成全球標準，弱化在地多元樣貌。"
       },
       11: {
-        us: "Deadpool（《惡棍英雄：死侍》Deadpool）、Dante（《惡魔獵人》Devil May Cry）",
-        jp: "五條悟（《咒術迴戰》）",
+        us: "Deadpool（《惡棍英雄：死侍》Deadpool）、星爵（《星際異攻隊》Guardians of the Galaxy）",
+        jp: "五條悟（《咒術迴戰》）、但丁（《惡魔獵人》Devil May Cry）",
         usNote: "一邊開玩笑、一邊殺人，可以讓觀眾暫時忘記暴力的重量，也讓「用幽默遮掩不安和恐懼」變成標準男人反應。",
         jpNote: "五條悟在高壓戰鬥裡仍瘋狂嘴砲，表面看起來超輕鬆，實際上把壓力和孤獨藏在笑話後面，讓「用玩笑掩飾脆弱」變成一種很酷的男性演出。"
       },
       12: {
         us: "Hulk（《復仇者聯盟》）、《戰爭機器》Gears of War 角色們",
-        jp: "歐爾麥特（《我的英雄學院》）、東堂癸（《咒術迴戰》）",
+        jp: "歐爾麥特（《我的英雄學院》）、東堂葵（《咒術迴戰》）",
         usNote: "誇張的肌肉提醒我們：力量被放到最前面，聰明、溫柔、溝通都排在後面，男人的身體像武器庫而不是生活的身體。",
         jpNote: "日系大隻男主角常被描寫成守護者或怪物，暗示肌肉越多，越不能輕易示弱，否則就會「不配」這個身材。"
       },
@@ -955,12 +1131,12 @@
       },
       14: {
         us: "Boba Fett（《星際大戰》Star Wars）、Deadshot（《自殺突擊隊》Suicide Squad）",
-        jp: "猗窩座（《鬼滅之刃》）、奇犽（《獵人》）",
+        jp: "伏黑甚爾（《咒術迴戰》）、奇犽（《獵人》）",
         usNote: "以暴力維生讓角色看起來很自由，其實是把男人綁在「要靠打鬥才能證明自己的價值」這條單一路線上。",
         jpNote: "日系角色即使是傭兵或殺手，常被描述為「內心其實很善良」，更模糊了暴力與溫柔之間的界線。"
       },
       15: {
-        us: "Solid Snake（《潛龍諜影》系列）對高層的不信任",
+        us: "傑洛特（《巫師》The Witcher）、韓索羅（《星際大戰》Star Wars）",
         jp: "奈良鹿丸（《火影忍者》）、埼玉（《一拳超人》）",
         usNote: "說自己不關心政治，看似中立，其實是在避免表態與責任，讓男主角永遠站在旁觀者位置批評世界。",
         jpNote: "日系作品常把「不想理政治」寫成一種可愛的厭世，觀眾只看到他的疲累，卻不會想到權力結構如何影響他。"
@@ -972,7 +1148,7 @@
         jpNote: "凡恩與各種雙槍、神槍手角色一樣，被畫成又帥又冷的輸出機器，柔化了武器帶來的現實暴力，只剩華麗的射擊姿勢。"
       },
       17: {
-        us: "Batman（《蝙蝠俠》）、Cloud（《Final Fantasy VII》）",
+        us: "Batman（《蝙蝠俠》）、Max Payne（《江湖本色》Max Payne）",
         jp: "碇真嗣（《新世紀福音戰士》）、金木研（《東京喰種》）",
         usNote: "憂鬱沉思被視為「有深度」，卻很少真的帶到尋求協助或治療，讓男人的痛停留在帥氣陰影裡，而不是走向修復。",
         jpNote: "日系苦痛主角很擅長內心獨白，卻往往將痛苦變成成長燃料，而不是提醒我們：有時候需要的是好好活下去，而不是再戰一次。"
@@ -985,7 +1161,7 @@
       },
       19: {
         us: "Iron Man（《鋼鐵人》）、Master Chief（《最後一戰》Halo）",
-        jp: "古爾‧杰特克（《水星的魔女》）、哥布林殺手（《哥布林殺手》）",
+        jp: "古爾‧傑特克（《水星的魔女》）、哥布林殺手（《哥布林殺手》）",
         usNote: "厚重護甲代表「刀槍不入的男人」，看起來安全，其實也在暗示：真正的男人不用被理解，他只要負責扛子彈。",
         jpNote: "日系作品裡，盔甲與機甲往往藏著主人公的恐懼與無力，卻仍然被描寫成華麗的外殼，遮住了他需要支持的現實。"
       },
@@ -996,7 +1172,7 @@
         jpNote: "日系硬派世界觀常反覆強調「弱者會死」，逼男主角越來越狠，也讓觀眾把溫柔與猶豫當成不合時宜。"
       },
       21: {
-        us: "Kratos（《戰神》God of War）、Hitman（《刺客任務》Hitman）",
+        us: "Kratos（《戰神》God of War）、Agent 47（《刺客任務》Hitman）",
         jp: "埼玉（《一拳超人》）、克林（《七龍珠》Dragon Ball）",
         usNote: "禿頭或平頭容易和「狠角色」「不苟言笑」連結，延續軍人、囚犯、殺手的視覺語言，讓某種男性外貌直接被貼上暴力標籤。",
         jpNote: "日系光頭角色常作為搞笑或怪力角色，卻很少是細膩的情感主角，限制了這種外型可以承載的故事範圍。"
@@ -1015,9 +1191,9 @@
       },
       24: {
         us: "Doomguy（《毀滅戰士》DOOM）、Isaac（《絕命異次元》Dead Space）",
-        jp: "兩面宿儺（《咒術迴戰》）",
+        jp: "竈門炭治郎（《鬼滅之刃》）、虎杖悠仁（《咒術迴戰》）",
         usNote: "只要把敵人設計成「非人類」，玩家就能放心屠殺，順便練習對暴力麻痺，而不會去想像被打倒的一方的感受。",
-        jpNote: "宿儺大多在屠殺咒靈或其他「非普通人類」的存在，看起來像是清怪，但也讓我們習慣把某些生命完全排除在「值得同理的人」之外。"
+        jpNote: "日系作品也常用鬼、咒靈、巨人取代人類敵人，但畫面一樣血腥。這讓我們習慣把某些存在整體排除在「值得同理的人」之外。"
       },
       25: {
         us: "Punisher（《制裁者》）、Max Payne（《江湖本色》Max Payne）",
@@ -1027,257 +1203,299 @@
       }
     };
 
-    // 女性模式：每一格對應的女性困境
+    // 女性視角：同一特質放在他／她身上，各自被怎麼評價
     const femaleDetails = {
       1: {
-        dailyTitle: "女生扛起「保護者」角色",
-        dailyNote: "當女生主動承擔保護別人的工作時，很容易被認為太強勢、不夠溫柔，好像照顧別人只能用安靜體貼的方式。",
-        peerTitle: "「女生當兵怪怪的」、「男人婆」",
-        peerNote: "有人會用開玩笑的口氣質疑女生選擇軍警或保全相關工作，傳遞出力量與權威比較適合男性的訊息。"
+        him: "有擔當、可靠",
+        himNote: "軍銜替他的強悍背書，暴力成了「執行任務」，沒有人問他適不適合。",
+        her: "男人婆、女生當什麼兵",
+        herNote: "同樣的選擇放在她身上，先被檢查的是「像不像女生」，而不是能力夠不夠。"
       },
       2: {
-        dailyTitle: "只剩身分，沒有名字",
-        dailyNote: "很多女生在生活裡被叫成誰誰的女兒、誰誰的女友、哪個職務，真正的名字反而排在很後面。",
-        peerTitle: "「她就是某某人的女朋友」",
-        peerNote: "當介紹一個女生時，只說她是誰的附屬，會讓她的努力、喜好和個性通通消失。"
+        him: "神祕、專業",
+        himNote: "沒有名字讓他顯得深不可測，代號是他自己掙來的招牌。",
+        her: "「某某的女友」、「誰的媽媽」",
+        herNote: "她的名字也不見了，但取代它的是她「屬於誰」；代號說的是關係，不是本事。"
       },
       3: {
-        dailyTitle: "一點叛逆就被放大",
-        dailyNote: "女生的失誤或衝動常被貼上品行有問題的標籤，同樣的行為在男生身上有時只被當成頑皮或有個性。",
-        peerTitle: "「女生怎麼可以這樣沒家教」",
-        peerNote: "責備女生的時候，常會直接連到家教、品德，好像她代表了整個家庭的臉面。"
+        him: "壞得有魅力、浪子",
+        himNote: "越界被讀成膽識，故事還會替他安排苦衷，讓觀眾心疼。",
+        her: "沒家教、不檢點",
+        herNote: "同樣越界，被追究的卻是品行與家教，一個人的錯變成「女生怎麼可以這樣」。"
       },
       4: {
-        dailyTitle: "替自己說話就被說太激動",
-        dailyNote: "當女生嚴肅捍衛界線，要求他人負責時，很容易被形容為情緒化、小題大作。",
-        peerTitle: "「妳幹嘛那麼兇，又沒什麼」",
-        peerNote: "這類評語把問題從行為移開，改成檢查女生的語氣，讓她更難好好說出不舒服。"
+        him: "有正義感、敢出手",
+        himNote: "他動手是因為「體制太慢」，憤怒被當成正義的證明。",
+        her: "太激動、小題大作",
+        herNote: "她為自己討公道，被檢查的是語氣而不是事情本身；問題從「誰做錯」變成「妳幹嘛這麼兇」。"
       },
       5: {
-        dailyTitle: "被期待完全不能生氣",
-        dailyNote: "女生一旦表現出強烈的憤怒或不滿，很可能會被解讀成失控，而不是在面對不公平。",
-        peerTitle: "「女生這樣好可怕，脾氣也太差」",
-        peerNote: "生氣常被拿來評分女生的人品，讓她連正當的不滿都不敢表達。"
+        him: "殺伐果斷",
+        himNote: "下手不猶豫被寫成領袖氣質，狠是一種能力。",
+        her: "蛇蠍心腸、可怕的女人",
+        herNote: "同樣的狠被寫成本性有問題，還附帶一句「女人狠起來更可怕」。"
       },
       6: {
-        dailyTitle: "承受壓力卻被當作理所當然",
-        dailyNote: "很多女生長期照顧家人或承擔情緒勞動，疲憊感卻常被看成應該習慣的事。",
-        peerTitle: "「妳不是一直都很堅強嗎」",
-        peerNote: "別人習慣把她的忍耐當成能力，反而忽略她其實也有權利喊累。"
+        him: "歷練豐富、有故事",
+        himNote: "傷疤和皺紋是資歷，年紀越大越有份量。",
+        her: "滄桑、年紀大了",
+        herNote: "同樣的歲月痕跡被算成損耗；他的年齡是加分，她的年齡要被遮掩。"
       },
       7: {
-        dailyTitle: "變得麻木被說早就習慣了",
-        dailyNote: "當一個人長期被忽視或貶低時，有時真的會懶得再反應，表面看起來變得很冷淡。",
-        peerTitle: "「這些她應該無感吧」",
-        peerNote: "旁人以為她什麼都不在乎，但那往往是因為曾經在乎過很多次，卻沒人認真回應。"
+        him: "冷靜、專業",
+        himNote: "不被情緒影響是職業素養，沒有表情等於可靠。",
+        her: "冷血、沒有同情心",
+        herNote: "人們預設她該溫柔、該心軟，一旦沒有，就像少了什麼「該有的東西」。"
       },
       8: {
-        dailyTitle: "喜歡一個人行動的女生",
-        dailyNote: "有些女生比較獨立、習慣自己處理事情，卻會被解讀成難相處或不合群。",
-        peerTitle: "「她感覺很孤僻，不好親近」",
-        peerNote: "當女生不是那種一直在照顧氣氛的人時，很容易被扣上冷淡的印象。"
+        him: "酷、獨立",
+        himNote: "不需要別人被讀成強大，孤獨是他的風格。",
+        her: "孤僻、難相處",
+        herNote: "她被預設要負責維繫氣氛，不合群就成了個性缺陷。"
       },
       9: {
-        dailyTitle: "收起情緒就被說很冷",
-        dailyNote: "有的女生學會把感受藏起來，避免被說愛抱怨或太敏感，結果反而被貼上冷漠的標籤。",
-        peerTitle: "「她都沒表情，看起來很難相處」",
-        peerNote: "這樣的評論忽略了她為了活下來，花了多少力氣在控制情緒。"
+        him: "高冷、有距離感",
+        himNote: "話少、不解釋，旁人會主動去理解他。",
+        her: "臉很臭、擺架子",
+        herNote: "同樣不說話，她卻欠大家一個好臉色；沉默被當成對別人的冒犯。"
       },
       10: {
-        dailyTitle: "誰被當成「標準」的亞洲女生",
-        dailyNote: "螢幕上的亞洲女性樣貌常被拉得很單一，膚色、身材、五官都有固定模板，跟現實生活的多樣差很多。",
-        peerTitle: "「妳長得不太像大家心目中的女主角」",
-        peerNote: "當「主角樣」只有一種，其它女生就容易被當成背景或路人，連自己也開始懷疑外表值不值得被看見。"
+        him: "預設就是主角，不必解釋",
+        himNote: "他的長相是「一般人」的基準，角色可以只靠行動被記住。",
+        her: "要白、要瘦，才「像女主角」",
+        herNote: "她得先通過外貌這一關才有戲份；長相不合模板，就只能當配角或笑點。"
       },
       11: {
-        dailyTitle: "用玩笑掩蓋不自在",
-        dailyNote: "有些女生會用自嘲或笑鬧的方式化解尷尬，把真正的害怕藏在笑聲裡。",
-        peerTitle: "「妳不是都笑笑的，哪有那麼嚴重」",
-        peerNote: "當別人只看到她的幽默，就會以為她真的沒有被傷到。"
+        him: "幽默、臨危不亂",
+        himNote: "危急時還能開玩笑，證明他掌控全場。",
+        her: "不正經、三八",
+        herNote: "同樣的玩笑由她來說，被嫌不莊重；幽默感彷彿有性別限定。"
       },
       12: {
-        dailyTitle: "想練出力量的女生",
-        dailyNote: "當女生刻意鍛鍊身體、讓自己變得有力量時，常被拿身材開玩笑，好像健身不是為了自己。",
-        peerTitle: "「妳這樣很男人婆欸」",
-        peerNote: "一句看似隨口的評論，會把她努力追求的自在，變成被審查的對象。"
+        him: "可靠、有安全感",
+        himNote: "肌肉等於保護力，越壯越讓人放心。",
+        her: "可怕、金剛芭比",
+        herNote: "同樣的肌肉被當成威脅或笑料，力量在她身上需要被解釋。"
       },
       13: {
-        dailyTitle: "不乖不甜就被懷疑動機",
-        dailyNote: "女生只要稍微表現出不按牌理出牌，很快就會被猜測是不是很有心機。",
-        peerTitle: "「她感覺目的性很強」",
-        peerNote: "別人會比平常更用放大鏡檢查她，卻不一定願意去理解她真正的處境。"
+        him: "亦正亦邪、有魅力",
+        himNote: "手段不乾淨但目標正確，複雜是他的深度。",
+        her: "心機重、壞女人",
+        herNote: "同樣的算計，換來的是道德審判。吳曉樂寫道：「男人的心機是運籌帷幄，女人的運籌帷幄都是心機好重。」"
       },
       14: {
-        dailyTitle: "被要求溫柔卻也要扛事",
-        dailyNote: "女生一方面被期待好相處，一方面又被默默丟很多責任，包含整理場面和安撫情緒。",
-        peerTitle: "「這種事妳處理一下就好」",
-        peerNote: "當所有人都覺得由她出面最合適時，她就被留在前線，又不能太有意見。"
+        him: "硬漢、靠實力吃飯",
+        himNote: "靠打鬥謀生被看成自由與本事。",
+        her: "「性感女殺手」",
+        herNote: "她的戰鬥力常被包裝成觀賞用；鏡頭在意的是她打起來好不好看。"
       },
       15: {
-        dailyTitle: "說出看法就被嫌太多話",
-        dailyNote: "女生對社會議題提出意見時，常被勸說不要太敏感，或被提醒低調一點比較安全。",
-        peerTitle: "「妳何必講那麼多，改不了什麼」",
-        peerNote: "這類話讓很多人慢慢放棄發聲，留下更深的無力感。"
+        him: "看透了、清醒",
+        himNote: "不表態被讀成超然，像是早就想清楚了。",
+        her: "女生本來就不懂這些",
+        herNote: "同樣不表態，被當成不關心、不懂；而她真的開口時，又被嫌話太多。"
       },
       16: {
-        dailyTitle: "被期待永遠溫和無害",
-        dailyNote: "如果女生喜歡強烈風格或主動出手保護自己，常被質疑看起來太攻擊性。",
-        peerTitle: "「女生這樣太兇，不好相處」",
-        peerNote: "對女生的武裝會被當成個性問題，而不是一種自我保護。"
+        him: "火力強大、帥",
+        himNote: "武器是他能力的延伸，數量等於戰力。",
+        her: "拿槍的辣妹",
+        herNote: "同一把槍到她手上成了造型配件，海報先展示的是身材，其次才是火力。"
       },
       17: {
-        dailyTitle: "難過久了就被說想太多",
-        dailyNote: "女生出現憂鬱或不安時，有時只換來要她想開一點，而不是實際的支持。",
-        peerTitle: "「妳是不是又在鑽牛角尖」",
-        peerNote: "這樣的回應會把她的情緒變成麻煩，而不是需要被好好看待的訊號。"
+        him: "有深度、有故事",
+        himNote: "沉默的痛苦被拍成魅力，觀眾想走進他的內心。",
+        her: "想太多、玻璃心",
+        herNote: "同樣的低落被當成麻煩，得到的回應是「想開一點」，而不是傾聽。"
       },
       18: {
-        dailyTitle: "情緒困擾被當成個性缺陷",
-        dailyNote: "當女生提到自己的心理狀態，容易被貼上很難搞、很負面的標籤。",
-        peerTitle: "「誰敢跟這種情緒不穩的人在一起」",
-        peerNote: "這類話會讓她更不敢尋求協助，也更難承認自己正在受苦。"
+        him: "悲劇英雄",
+        himNote: "創傷是他的動機，也是觀眾原諒他的理由。",
+        her: "情緒不穩、神經兮兮",
+        herNote: "同樣的傷，她被貼上的是人格標籤。吳曉樂寫道：「男孩洶湧的情感表達是果敢，女孩的大笑與淚是神經兮兮。」"
       },
       19: {
-        dailyTitle: "練出防護罩的女生",
-        dailyNote: "有些女生慢慢學會把自己包得很厚，不輕易透露真心，以免再次被傷害。",
-        peerTitle: "「她很難親近，感覺一副很防備」",
-        peerNote: "旁人只看到她的盔甲，卻沒有意識到那層防備是怎麼被逼出來的。"
+        him: "全身包緊、刀槍不入",
+        himNote: "盔甲的功能是保護，包得越緊越專業。",
+        her: "比基尼鎧甲",
+        herNote: "她的盔甲經常露出最需要保護的地方；設計優先考慮的是被觀看，不是活下來。"
       },
       20: {
-        dailyTitle: "被說現實就要學著忍",
-        dailyNote: "當女生指出職場或家庭裡的不公平時，常被勸說這就是現實，不要太天真。",
-        peerTitle: "「妳這樣活得太累，管那麼多幹嘛」",
-        peerNote: "這類話會把不公平正常化，讓想改變的人反而顯得多事。"
+        him: "真實、夠硬",
+        himNote: "灰頭土臉、滿身是傷，才顯得真實。",
+        her: "再殘酷的世界，她還是得漂亮",
+        herNote: "同一個末日，她的妝髮依然完整；「寫實」的標準到她身上就鬆動了。"
       },
       21: {
-        dailyTitle: "短髮、線條俐落的女生",
-        dailyNote: "當女生剪短髮、選擇中性或俐落線條的造型時，很容易被拿來評論是不是「太中性」或「不夠女生」。",
-        peerTitle: "「妳這樣有點太帥了，不像女生」",
-        peerNote: "一句看似稱讚的話，實際上也在提醒她：不要離大家預設的女性樣貌太遠。"
+        him: "狠角色",
+        himNote: "剃光頭髮是俐落、不好惹。",
+        her: "不像女生、是不是受了刺激",
+        herNote: "頭髮被當成女性身分的一部分，剪掉它，旁人就急著替她找理由。"
       },
       22: {
-        dailyTitle: "不笑就被說臉很臭",
-        dailyNote: "有些女生只是放空或專心，卻被要求多笑一點，像是在替別人的心情負責。",
-        peerTitle: "「妳笑一下比較好看」",
-        peerNote: "這樣的提醒其實是在暗示：女生有義務看起來輕鬆、好相處。"
+        him: "有威嚴",
+        himNote: "不笑是權威，嚴肅讓人敬畏。",
+        her: "「笑一個比較好看」",
+        herNote: "她被預期要讓周圍的人舒服，不笑就像沒盡到義務。"
       },
       23: {
-        dailyTitle: "被想像成萬能的好女孩",
-        dailyNote: "有的人期待女生成績好、脾氣好、人緣也好，各方面都要處理得很漂亮。",
-        peerTitle: "「妳這種人應該什麼都做得到」",
-        peerNote: "這種期待看似稱讚，實際上把她壓在一個不准失誤的位置上。"
+        him: "天選之人",
+        himNote: "力量越大越被信任，故事讓他學會掌控，然後拯救世界。",
+        her: "太強就會失控、暴走",
+        herNote: "強大的女性角色常被寫成危險、不穩定，最後需要被壓制或被拯救。"
       },
       24: {
-        dailyTitle: "對某些人被迫關機的同理心",
-        dailyNote: "現實中也有一群人被當成麻煩或背景，很少被當成真正的人來理解。",
-        peerTitle: "「那些人本來就那樣，不用理」",
-        peerNote: "當這種話被說出口，也在默默教女生學會忽略某些人的感受，包含她自己的。"
+        him: "斬妖除魔的勇者",
+        himNote: "打怪是英雄的日常，沒有人質疑他為什麼這麼能打。",
+        her: "暴力女、誰敢惹她",
+        herNote: "同樣能打，她會被叮嚀「這樣沒人敢要」；戰力變成別人評價她的扣分項。"
       },
       25: {
-        dailyTitle: "受傷後只被期待快點走出來",
-        dailyNote: "女生遇到重大打擊時，常被提醒趕快振作，而不是被允許慢慢修復。",
-        peerTitle: "「妳要堅強一點，不要一直卡著」",
-        peerNote: "這樣的期待會讓她覺得，自己如果沒有立刻好起來，就是在拖累大家。"
+        him: "有血性、重情義",
+        himNote: "復仇被寫成忠誠，不報仇才對不起逝去的人。",
+        her: "最毒婦人心、放不下",
+        herNote: "同樣放不下，被說成記恨、小心眼；她被期待的是原諒，以及快點走出來。"
       }
     };
 
-    // 女性主義／女性思想者名言
+    // 正向引言：每則皆為可查證的原句並附出處；除波娃、吳曉樂外，中譯為本頁自譯
     const feministQuotes = [
       {
         authorZh: "西蒙．波娃",
         authorEn: "Simone de Beauvoir",
-        role: "法國哲學家、女性主義思想家",
-        text: "人不會天生就成為「那種女人」，而是一步一步被教成那樣。當世界替妳決定應該是誰時，保留選擇的權利本身就是一種勇氣。"
+        text: "人不是生而為女人，而是成為女人。",
+        orig: "On ne naît pas femme : on le devient.",
+        source: "《第二性》（1949）"
+      },
+      {
+        authorZh: "吳曉樂",
+        authorEn: "",
+        text: "愛自己，若聽來太深又太淺，不如抽換成另一套說詞，不應有恨。",
+        orig: "",
+        source: "〈習得復忘掉〉，《可是我偏偏不喜歡》（2019）"
       },
       {
         authorZh: "奧德麗．洛德",
         authorEn: "Audre Lorde",
-        role: "美國詩人、黑人民權與女權行動者",
-        text: "沉默不會保護妳。它只會讓別人以為這一切都還可以接受。"
+        text: "你的沉默不會保護你。",
+        orig: "Your silence will not protect you.",
+        source: "〈將沉默化為語言與行動〉（1977），收錄於《Sister Outsider》"
       },
       {
-        authorZh: "奇瑪曼達．阿迪契",
+        authorZh: "奇瑪曼達．恩格茲．阿迪契",
         authorEn: "Chimamanda Ngozi Adichie",
-        role: "奈及利亞作家、女性主義講者",
-        text: "我們從小教女孩縮小自己，把分數讓出來，把榮耀收斂一點。當妳開始不再縮小自己，也是在提醒周圍的人，這樣的教育其實傷到了很多人。"
+        text: "我們教女孩縮小自己，讓自己變得更渺小。",
+        orig: "We teach girls to shrink themselves, to make themselves smaller.",
+        source: "《我們都應該是女性主義者》（2014）"
       },
       {
-        authorZh: "貝兒．胡克斯",
+        authorZh: "貝爾．胡克斯",
         authorEn: "bell hooks",
-        role: "美國學者、文化評論家",
-        text: "愛自己不是自私，而是從被貶低的故事裡，慢慢長出一個新的版本，讓自己可以好好活下去。"
+        text: "簡單來說，女性主義是一場終結性別歧視、性別剝削與壓迫的運動。",
+        orig: "Simply put, feminism is a movement to end sexism, sexist exploitation, and oppression.",
+        source: "《Feminism Is for Everybody》（2000）"
       },
       {
         authorZh: "露絲．拜德．金斯伯格",
         authorEn: "Ruth Bader Ginsburg",
-        role: "美國大法官、性別平權推手",
-        text: "真正的改變，來自一再有人願意站出來說：這樣不公平。每一次說出口，都在為下一個人打開一點縫隙。"
+        text: "凡是做決定的地方，都該有女性的位置。",
+        orig: "Women belong in all places where decisions are being made.",
+        source: "2009 年受訪談話"
       },
       {
         authorZh: "維吉尼亞．吳爾芙",
         authorEn: "Virginia Woolf",
-        role: "英國小說家、散文家",
-        text: "當一個人開始為自己寫下句子，她也在為自己畫出空間。那是一個能短暫放下他人目光、只問自己想怎麼活的房間。"
-      },
-      {
-        authorZh: "J.K. 羅琳",
-        authorEn: "J.K. Rowling",
-        role: "英國作家",
-        text: "妳不需要靠別人的看法證明價值。能站在自己的故事裡面，承認曾經害怕、也承認自己撐過來，這本身就很了不起。"
+        text: "你們無法為我心靈的自由，設下任何門、任何鎖、任何門閂。",
+        orig: "There is no gate, no lock, no bolt that you can set upon the freedom of my mind.",
+        source: "《自己的房間》（1929）"
       }
     ];
 
-    // --- 狀態 ---
-    let selected = new Set();
-    let bingoLines = 0;
-    let modalShown = false;
+    // 兩種視角的介面文字
+    const modeText = {
+      male: {
+        tagline: "你的遊戲男主角，是不是也「中槍」了？",
+        boardTitle: "點選你看過的男性主角特徵",
+        boardDesc: "回想最近玩過 / 看過的一位角色，勾選符合他的格子，看看他有多接近「陽剛模板」。",
+        panelTitle: "特徵分析資料庫",
+        panelSubtitle: "點選左側任一格子，看看這個特徵在不同文化裡，如何被包裝成「理所當然的男人樣子」。",
+        question: "如果一代又一代的作品，都把「好男人」畫成差不多的樣子，那些畫不進格子裡的男生──包括你身邊的人、包括你自己──會被看成什麼？他們的感受，有沒有被留位置？",
+        emptyMain: "先從左邊點一格看看。",
+        emptySub: "你會發現，美系硬漢、日系男主角，常常共用一套「情緒與外型模板」。這些模板，就是我們在課文裡說的性別腳本：它規定男人該怎麼看、怎麼動、可以表現哪些情緒。",
+        tags: ["#陽剛模板", "#有毒男子氣概", "#媒體識讀"],
+        card1: ["歐美", "歐美硬派代表"],
+        card2: ["東亞", "日系與東亞動漫 / 遊戲代表"],
+        bingoTitle: "BINGO！你找到一條「陽剛模板」了。",
+        bingoText: ["你連出了一條「陽剛模板」：這麼多角色，其實共用同一份「男性腳本」。", "待會讀白爾雅〈男子氣概有毒嗎？〉時，對照這些格子，看看哪些地方會傷到別人，也傷到自己。"],
+        hint: ["這個賓果盤是用來整理「遊戲與動漫裡常見的男性主角樣板」。", "你可以先從自己熟悉的一位男性角色開始，看看有哪些格子被勾起來，想一想：這些特徵是他們自由選的，還是劇本早就替他們安排好的？"]
+      },
+      female: {
+        tagline: "如果把這些條件暫時套在女生身上，感覺會變成什麼？",
+        boardTitle: "把這些格子暫時套在女生身上",
+        boardDesc: "想像畫面裡主角換成一位女生，看看同樣的條件出現在她身上時，會被怎麼看待。",
+        panelTitle: "同一特質，兩種評語",
+        panelSubtitle: "點選左側任一格子，比較同一個特質放在男性與女性身上時，得到的評語有什麼不同。",
+        question: "這些評語是我們要分析的對象，不是事實，也不是拿來貼在同學身上的標籤。同一個特質，為什麼換了性別就換了說法？哪一句你聽過，或自己說過？",
+        emptyMain: "先從左邊任選一格，換個角度看看。",
+        emptySub: "同一個特質，放在他身上是稱讚，放在她身上卻常變成批評。這個模式把兩種評語並排，讓我們看見平常很少被說出口的雙重標準。",
+        tags: ["#女生被怎麼看", "#性別雙標", "#性別腳本"],
+        card1: ["他", "在他身上被說成"],
+        card2: ["她", "在她身上被說成"],
+        bingoTitle: "BINGO！你畫出了一條審查女生的線。",
+        bingoText: ["你連出了一條審查女生的線：不能太強、不能太弱、不能太安靜，也不能太明顯。", "下一節讀吳曉樂〈習得復忘掉〉時，留意這些評語怎麼讓人開始「裁切自己」。"],
+        hint: ["現在是把同一套格子暫時套在女生身上的模式。", "當一個人被用這些條件檢查時，很容易開始懷疑自己哪裡不對，而不是懷疑這套標準本身合不合理。你可以邊玩邊想：哪些評語你聽過或說過？那些時刻，誰被傷到了？"]
+      }
+    };
+
+    // --- 狀態：兩種視角各自保留勾選 ---
+    const newBoard = () => ({ selected: new Set(), lines: 0, modalShown: false, lastId: null });
+    const state = { male: newBoard(), female: newBoard() };
     let currentMode = "male";
-    let lastClickedId = null;
-    // 每兩次勾選觸發一次名言（只算打勾，不算取消）
+    const cur = () => state[currentMode];
+    // 每兩次勾選觸發一次引言（只算打勾，不算取消）
     let femaleSelectCount = 0;
-    // 不重複抽名言用的牌堆
+    // 不重複抽引言用的牌堆
     let quotePool = [...feministQuotes];
+    let lastQuote = null;
 
     // DOM 參照
-    const gridEl = document.getElementById("bingoGrid");
-    const bingoCountEl = document.getElementById("bingoCount");
-    const resetBtn = document.getElementById("resetBtn");
-    const hintBtn = document.getElementById("hintBtn");
-    const panelEmpty = document.getElementById("panelEmpty");
-    const panelContent = document.getElementById("panelContent");
-    const featureCategory = document.getElementById("featureCategory");
-    const featureName = document.getElementById("featureName");
-    const exampleUS = document.getElementById("exampleUS");
-    const exampleJP = document.getElementById("exampleJP");
-    const noteUS = document.getElementById("noteUS");
-    const noteJP = document.getElementById("noteJP");
-    const modalBackdrop = document.getElementById("modalBackdrop");
-    const closeModalBtn = document.getElementById("closeModal");
-    const resetFromModalBtn = document.getElementById("resetFromModal");
-    const modeToggleBtn = document.getElementById("modeToggle");
-    const taglineText = document.getElementById("taglineText");
-    const boardTitleEl = document.getElementById("boardTitle");
-    const boardDescEl = document.getElementById("boardDesc");
-    const panelSubtitleEl = document.getElementById("panelSubtitle");
-    const panelQuestionEl = document.getElementById("panelQuestion");
-    const emptyMainTextEl = document.getElementById("emptyMainText");
-    const emptySubTextEl = document.getElementById("emptySubText");
-    const tag1 = document.getElementById("tag1");
-    const tag2 = document.getElementById("tag2");
-    const tag3 = document.getElementById("tag3");
-    const bingoTitleEl = document.getElementById("bingoTitle");
-    const bingoTextEl = document.getElementById("bingoText");
-    const quoteModalBackdrop = document.getElementById("quoteModalBackdrop");
-    const closeQuoteModalBtn = document.getElementById("closeQuoteModal");
-    const quoteTextEl = document.getElementById("quoteText");
-    const quoteMetaEl = document.getElementById("quoteMeta");
-    const quoteStrip = document.getElementById("quoteStrip");
-    const quoteStripText = document.getElementById("quoteStripText");
-    const card1Title = document.getElementById("card1Title");
-    const card2Title = document.getElementById("card2Title");
-    const card1Flag = document.getElementById("card1Flag");
-    const card2Flag = document.getElementById("card2Flag");
-    const panelTitle = document.getElementById("panelTitle");
+    const $ = id => document.getElementById(id);
+    const gridEl = $("bingoGrid");
+    const bingoCountEl = $("bingoCount");
+    const panelEmpty = $("panelEmpty");
+    const panelContent = $("panelContent");
+    const quoteStrip = $("quoteStrip");
+    const quoteStripText = $("quoteStripText");
+    const modeButtons = { male: $("modeMale"), female: $("modeFemale") };
+    const modals = {
+      bingo: $("modalBackdrop"),
+      quote: $("quoteModalBackdrop"),
+      hint: $("hintModalBackdrop")
+    };
+
+    // 多段文字寫入同一個 <p>，段落間以 <br> 分隔
+    function setParagraphs(el, lines) {
+      el.textContent = "";
+      lines.forEach((line, i) => {
+        if (i > 0) el.appendChild(document.createElement("br"));
+        el.appendChild(document.createTextNode(line));
+      });
+    }
+
+    // 寫入說明文字，並把「」內的關鍵詞標成重點
+    function setRich(el, text) {
+      el.textContent = "";
+      text.split(/(「[^」]*」)/).forEach(part => {
+        if (!part) return;
+        if (part.startsWith("「")) {
+          const key = document.createElement("span");
+          key.className = "key";
+          key.textContent = part;
+          el.appendChild(key);
+        } else {
+          el.appendChild(document.createTextNode(part));
+        }
+      });
+    }
 
     // --- 初始化賓果盤 ---
     function createGrid() {
@@ -1285,6 +1503,7 @@
       bingoData.forEach(item => {
         const btn = document.createElement("button");
         btn.className = "cell" + (item.isCenter ? " center" : "");
+        if (cur().selected.has(item.id)) btn.classList.add("selected");
         btn.type = "button";
         btn.innerHTML = `
           <div class="cell-category">${item.category}</div>
@@ -1297,13 +1516,13 @@
 
     // --- 切換格子選取 ---
     function toggleCell(id, element) {
-      const wasSelected = selected.has(id);
+      const board = cur();
 
-      if (wasSelected) {
-        selected.delete(id);
+      if (board.selected.has(id)) {
+        board.selected.delete(id);
         element.classList.remove("selected");
       } else {
-        selected.add(id);
+        board.selected.add(id);
         element.classList.add("selected");
 
         // 只有在女性模式下，真正新增勾選才計數
@@ -1313,140 +1532,119 @@
         }
       }
 
-      lastClickedId = id;
+      board.lastId = id;
       updatePanel(id);
       updateBingo();
+      advanceGuide("cell");
     }
 
     // --- 更新右側說明 ---
+    function showEmptyPanel() {
+      panelContent.style.display = "none";
+      panelEmpty.style.display = "flex";
+      document.body.classList.remove("sheet-open");
+    }
+
     function updatePanel(id) {
       const cellData = bingoData.find(item => item.id === id);
       if (!cellData) return;
 
       panelEmpty.style.display = "none";
       panelContent.style.display = "grid";
+      document.body.classList.add("sheet-open");
 
-      featureCategory.textContent = cellData.category;
+      $("featureCategory").textContent = cellData.category;
 
-      // 預設顯示格子文字，女性模式下對 10、21 做替換顯示
-      let displayName = cellData.text.replace(/\n/g,"");
-      if (currentMode === "female") {
-        if (id === 10) {
-          displayName = "亞洲女性的「主角樣」";
-        } else if (id === 21) {
-          displayName = "短髮、線條俐落的女生";
-        }
+      // 女性視角下，「白人男性」這格談的是外貌預設
+      let displayName = cellData.text.replace(/\n/g, "");
+      if (currentMode === "female" && id === 10) {
+        displayName = "預設的主角長相";
       }
-      featureName.textContent = displayName;
+      $("featureName").textContent = displayName;
 
       if (currentMode === "male") {
         const detail = traitDetails[id];
-        card1Title.textContent = "歐美硬派代表";
-        card1Flag.textContent = "🇺🇸";
-        card2Title.textContent = "日本動漫 / RPG 代表";
-        card2Flag.textContent = "🇯🇵";
-        panelTitle.textContent = "特徵分析資料庫";
-
         if (detail) {
-          exampleUS.textContent = detail.us;
-          exampleJP.textContent = detail.jp;
-          noteUS.textContent = detail.usNote;
-          noteJP.textContent = detail.jpNote;
+          $("exampleUS").textContent = detail.us;
+          $("exampleJP").textContent = detail.jp;
+          setRich($("noteUS"), detail.usNote);
+          setRich($("noteJP"), detail.jpNote);
         } else {
-          exampleUS.textContent = "（暫無範例）";
-          exampleJP.textContent = "（暫無範例）";
-          noteUS.textContent = "這個特徵在不同文化裡，也常被用來描繪特定的男性樣板。";
-          noteJP.textContent = "你可以試著想一想：你看過的作品，是怎麼處理這個設定的？";
+          $("exampleUS").textContent = "（暫無範例）";
+          $("exampleJP").textContent = "（暫無範例）";
+          setRich($("noteUS"), "這個特徵在不同文化裡，也常被用來描繪特定的男性樣板。");
+          setRich($("noteJP"), "你可以試著想一想：你看過的作品，是怎麼處理這個設定的？");
         }
       } else {
         const detailF = femaleDetails[id];
-        card1Title.textContent = "日常情境";
-        card1Flag.textContent = "🏠";
-        card2Title.textContent = "同儕眼中的評語";
-        card2Flag.textContent = "🗣";
-        panelTitle.textContent = "審查女生的隱形劇本";
-
-        if (detailF) {
-          exampleUS.textContent = detailF.dailyTitle;
-          noteUS.textContent = detailF.dailyNote;
-          exampleJP.textContent = detailF.peerTitle;
-          noteJP.textContent = detailF.peerNote;
-        } else {
-          exampleUS.textContent = "某些要求如果換成女生身上，看起來就完全不一樣。";
-          noteUS.textContent = "你可以試著想想：如果周圍的人把這個格子拿來要求女生，會發生什麼事？";
-          exampleJP.textContent = "「妳這樣不太像大家要的那種女生」";
-          noteJP.textContent = "這類模糊的評語，會讓人一直懷疑自己哪裡不夠好。";
-        }
+        $("exampleUS").textContent = detailF.him;
+        setRich($("noteUS"), detailF.himNote);
+        $("exampleJP").textContent = detailF.her;
+        setRich($("noteJP"), detailF.herNote);
       }
     }
 
     // --- 檢查連線 ---
-    function updateBingo() {
-      const s = selected;
+    function countLines(s) {
       const size = 5;
       let lines = 0;
 
-      // rows
-      for (let r = 0; r < size; r++) {
-        let ok = true;
-        for (let c = 0; c < size; c++) {
-          const id = r * size + c + 1;
-          if (!s.has(id)) {
-            ok = false;
-            break;
-          }
+      for (let i = 0; i < size; i++) {
+        let row = true;
+        let col = true;
+        for (let j = 0; j < size; j++) {
+          if (!s.has(i * size + j + 1)) row = false;
+          if (!s.has(j * size + i + 1)) col = false;
         }
-        if (ok) lines++;
+        if (row) lines++;
+        if (col) lines++;
       }
 
-      // cols
-      for (let c = 0; c < size; c++) {
-        let ok = true;
-        for (let r = 0; r < size; r++) {
-          const id = r * size + c + 1;
-          if (!s.has(id)) {
-            ok = false;
-            break;
-          }
-        }
-        if (ok) lines++;
+      if ([1,7,13,19,25].every(id => s.has(id))) lines++;
+      if ([5,9,13,17,21].every(id => s.has(id))) lines++;
+      return lines;
+    }
+
+    function updateBingo() {
+      const board = cur();
+      const lines = countLines(board.selected);
+
+      if (lines > 0 && lines > board.lines && !board.modalShown) {
+        board.modalShown = true;
+        openModal("bingo");
       }
 
-      // diag
-      const diag1 = [1,7,13,19,25].every(id => s.has(id));
-      const diag2 = [5,9,13,17,21].every(id => s.has(id));
-      if (diag1) lines++;
-      if (diag2) lines++;
-
-      if (lines > 0 && lines > bingoLines && !modalShown) {
-        showBingoModal();
-      }
-
-      bingoLines = lines;
+      board.lines = lines;
       bingoCountEl.textContent = String(lines);
     }
 
-    function showBingoModal() {
-      modalShown = true;
+    // --- 彈窗 ---
+    function openModal(name) {
+      modals[name].style.display = "flex";
+    }
 
-      if (currentMode === "male") {
-        bingoTitleEl.textContent = "BINGO！你找到一條「陽剛模板」了。";
-        bingoTextEl.innerHTML = "當那麼多角色都長得幾乎一樣、行為也差不多時，代表我們其實在重複同一份「男性腳本」。<br>待會閱讀白爾雅〈男子氣概有毒嗎？〉時，可以試著對照這些格子，看看哪些地方會傷到別人，也會傷到自己。";
-      } else {
-        bingoTitleEl.textContent = "BINGO！你畫出了一條審查女生的線。";
-        bingoTextEl.innerHTML = "當這些格子被疊在女生身上，就會形成一條看不見的標準線：不能太強、不能太弱、不能太安靜，也不能太明顯。<br>你可以想一想：如果身邊的人常被這樣審查，他們會怎麼看待自己，又會怎麼看待其他女生？";
+    function closeModal(name) {
+      const wasOpen = modals[name].style.display === "flex";
+      modals[name].style.display = "none";
+      // 關掉說明後，接著用引導帶一次操作
+      if (name === "hint" && wasOpen) startGuide();
+    }
+
+    // --- 引言（女性模式，每兩次勾選一次，不重複） ---
+    function renderQuoteStrip() {
+      quoteStripText.textContent = "";
+      if (currentMode !== "female" || !lastQuote) {
+        quoteStrip.style.display = "none";
+        return;
       }
-
-      modalBackdrop.style.display = "flex";
+      const name = document.createElement("strong");
+      name.textContent = lastQuote.authorZh + "：";
+      quoteStripText.appendChild(name);
+      quoteStripText.appendChild(document.createTextNode("「" + lastQuote.text + "」"));
+      quoteStrip.style.display = "block";
     }
 
-    function hideBingoModal() {
-      modalBackdrop.style.display = "none";
-    }
-
-    // --- 名言 modal（女性模式，每兩次勾選一次，不重複） ---
     function maybeShowQuoteModal() {
-      if (currentMode !== "female") return;
       if (femaleSelectCount % 2 !== 0) return; // 每勾兩格觸發一次
 
       if (quotePool.length === 0) {
@@ -1455,115 +1653,162 @@
 
       const idx = Math.floor(Math.random() * quotePool.length);
       const q = quotePool.splice(idx, 1)[0];
+      lastQuote = q;
 
-      quoteTextEl.textContent = "「" + q.text + "」";
-      quoteMetaEl.textContent = q.authorZh + "（" + q.authorEn + "，" + q.role + "）";
-      quoteStripText.innerHTML = "<strong>" + q.authorZh + "：</strong>「" + q.text + "」";
-      quoteStrip.style.display = "block";
-
-      quoteModalBackdrop.style.display = "flex";
+      $("quoteText").textContent = "「" + q.text + "」";
+      $("quoteOrig").textContent = q.orig;
+      $("quoteMeta").textContent = q.authorZh + (q.authorEn ? "（" + q.authorEn + "）" : "") + "｜" + q.source;
+      renderQuoteStrip();
+      openModal("quote");
     }
 
-    function hideQuoteModal() {
-      quoteModalBackdrop.style.display = "none";
-    }
-
-    // --- Reset ---
+    // --- Reset：只重置目前視角的盤面 ---
     function resetAll() {
-      selected = new Set();
-      bingoLines = 0;
-      modalShown = false;
-      femaleSelectCount = 0;
-      quotePool = [...feministQuotes];
+      state[currentMode] = newBoard();
+      if (currentMode === "female") {
+        femaleSelectCount = 0;
+        quotePool = [...feministQuotes];
+        lastQuote = null;
+      }
       bingoCountEl.textContent = "0";
       createGrid();
-      panelContent.style.display = "none";
-      panelEmpty.style.display = "flex";
-      quoteStripText.textContent = "";
-      quoteStrip.style.display = "none";
+      showEmptyPanel();
+      renderQuoteStrip();
     }
 
     // --- 視角切換 ---
-    function toggleMode() {
-      currentMode = currentMode === "male" ? "female" : "male";
-      document.body.setAttribute("data-mode", currentMode);
-      modeToggleBtn.setAttribute("data-mode", currentMode);
+    function applyModeText() {
+      const t = modeText[currentMode];
+      $("taglineText").textContent = t.tagline;
+      $("boardTitle").textContent = t.boardTitle;
+      $("boardDesc").textContent = t.boardDesc;
+      $("panelTitle").textContent = t.panelTitle;
+      $("panelSubtitle").textContent = t.panelSubtitle;
+      setRich($("panelQuestionText"), t.question);
+      $("emptyMainText").textContent = t.emptyMain;
+      $("emptySubText").textContent = t.emptySub;
+      t.tags.forEach((tag, i) => { $("tag" + (i + 1)).textContent = tag; });
+      $("card1Flag").textContent = t.card1[0];
+      $("card1Title").textContent = t.card1[1];
+      $("card2Flag").textContent = t.card2[0];
+      $("card2Title").textContent = t.card2[1];
+      $("bingoTitle").textContent = t.bingoTitle;
+      setParagraphs($("bingoText"), t.bingoText);
+      setParagraphs($("hintText"), t.hint);
+    }
 
-      if (currentMode === "female") {
-        // 進入女性模式：清空打勾＋狀態
-        selected = new Set();
-        bingoLines = 0;
-        modalShown = false;
-        femaleSelectCount = 0;
-        quotePool = [...feministQuotes];
-        bingoCountEl.textContent = "0";
-        document.querySelectorAll(".cell.selected").forEach(el => el.classList.remove("selected"));
-        panelContent.style.display = "none";
-        panelEmpty.style.display = "flex";
-        quoteStripText.innerHTML = "";
-        quoteStrip.style.display = "none";
-      } else {
-        // 回到男性模式時，也把當前名言條收掉
-        quoteStripText.innerHTML = "";
-        quoteStrip.style.display = "none";
-      }
+    function setMode(mode) {
+      if (mode === currentMode) return;
+      currentMode = mode;
+      document.body.setAttribute("data-mode", mode);
+      Object.keys(modeButtons).forEach(key => {
+        modeButtons[key].setAttribute("aria-pressed", String(key === mode));
+      });
 
-      if (currentMode === "male") {
-        taglineText.textContent = "你的遊戲男主角，是不是也「中槍」了？";
-        boardTitleEl.textContent = "點選你看過的男性主角特徵";
-        boardDescEl.textContent = "回想最近玩過 / 看過的一位角色，勾選符合他的格子，看看他有多接近「陽剛模板」。";
-        panelSubtitleEl.textContent = "點選左側任一格子，看看這個特徵在不同文化裡，如何被包裝成「理所當然的男人樣子」。";
-        panelQuestionEl.innerHTML = '<span>想一想：</span>如果一代又一代的作品，都把「好男人」畫成差不多的樣子，那些畫不進格子裡的男生──包括你身邊的人、包括你自己──會被看成什麼？他們的感受，有沒有被留位置？';
-        emptyMainTextEl.textContent = "先從左邊點一格看看。";
-        emptySubTextEl.textContent = "你會發現，美系硬漢、日系男主角，常常共用一套「情緒與外型模板」。這些模板，就是我們在課文裡說的性別腳本：它規定男人該怎麼看、怎麼動、可以表現哪些情緒。";
-        tag1.textContent = "#陽剛模板";
-        tag2.textContent = "#有毒男子氣概";
-        tag3.textContent = "#媒體識讀";
-      } else {
-        taglineText.textContent = "如果把這些條件暫時套在女生身上，感覺會變成什麼？";
-        boardTitleEl.textContent = "把這些格子暫時套在女生身上";
-        boardDescEl.textContent = "想像畫面裡主角換成一位女生，看看同樣的條件出現在她身上時，會被怎麼看待。";
-        panelSubtitleEl.textContent = "點選左側任一格子，試著讀讀這些設定換到女生身上時，會變成哪種日常壓力。";
-        panelQuestionEl.innerHTML = '<span>想一想：</span>當同一組要求被拿來檢查女生時，誰比較容易被說「太多」、誰又比較容易被說「不夠」？你身邊有誰曾被這樣對待？';
-        emptyMainTextEl.textContent = "先從左邊任選一格，換個角度看看。";
-        emptySubTextEl.textContent = "很多時候，女生被檢查的標準和男生不一樣，卻很少被說出口。這個模式只是暫時把格子翻轉，讓我們看見那些平常不太被注意的壓力。";
-        tag1.textContent = "#女生被怎麼看";
-        tag2.textContent = "#內在審查";
-        tag3.textContent = "#性別腳本";
-      }
+      applyModeText();
+      createGrid();
 
-      // 切換後如果有最後點過的格子，且目前模式下有選取，再更新說明
-      if (lastClickedId !== null && selected.size > 0) {
-        updatePanel(lastClickedId);
+      const board = cur();
+      bingoCountEl.textContent = String(board.lines);
+      if (board.lastId !== null && board.selected.size > 0) {
+        updatePanel(board.lastId);
       } else {
-        panelContent.style.display = "none";
-        panelEmpty.style.display = "flex";
+        showEmptyPanel();
       }
+      renderQuoteStrip();
+      advanceGuide(mode);
+    }
+
+    // --- 操作引導：跟著實際操作前進，可隨時略過 ---
+    const GUIDE_KEY = "bingoGuideDone";
+    const guideEl = $("guide");
+    const guideSteps = [
+      null,
+      { text: "點選任一格你看過的角色特徵。", target: () => gridEl },
+      { text: "右側出現了代表角色與解讀。接著切換到「女性視角」。", target: () => modeButtons.female.parentElement },
+      { text: "點任一格，比較同一特質在他與她身上的兩種評語。", target: () => gridEl }
+    ];
+    let guideStep = 0;
+    let guideTimers = [];
+    const GUIDE_LINGER_MS = 10000; // 探索建議停留多久後淡出
+
+    function markGuideDone() {
+      try { localStorage.setItem(GUIDE_KEY, "1"); } catch (e) {}
+    }
+
+    function showGuideStep(step) {
+      document.querySelectorAll(".guide-target").forEach(el => el.classList.remove("guide-target"));
+      guideTimers.forEach(clearTimeout);
+      guideTimers = [];
+      guideEl.classList.remove("fading");
+      guideStep = step;
+      guideEl.hidden = step === 0;
+      if (step === 0) return;
+
+      if (step > 3) {
+        // 三步完成：給探索建議並連回課堂文本，停留一段時間後自動淡出
+        $("guideStep").textContent = "探索";
+        $("guideText").textContent = "多勾幾格試著連線，兩種視角都看看。之後讀白爾雅〈男子氣概有毒嗎？〉、吳曉樂〈習得復忘掉〉時，再回來對照這些格子。";
+        $("guideSkip").textContent = "知道了";
+        markGuideDone();
+        guideTimers.push(setTimeout(() => {
+          guideEl.classList.add("fading");
+          guideTimers.push(setTimeout(() => showGuideStep(0), 800));
+        }, GUIDE_LINGER_MS));
+        return;
+      }
+      $("guideStep").textContent = step + " / 3";
+      $("guideText").textContent = guideSteps[step].text;
+      $("guideSkip").textContent = "略過引導";
+      guideSteps[step].target().classList.add("guide-target");
+    }
+
+    function startGuide() {
+      showGuideStep(currentMode === "female" ? 3 : 1);
+    }
+
+    function advanceGuide(event) {
+      if (guideStep === 1 && event === "cell") showGuideStep(2);
+      else if (guideStep === 2 && event === "female") showGuideStep(3);
+      else if (guideStep === 3 && event === "cell" && currentMode === "female") showGuideStep(4);
     }
 
     // --- 事件 ---
-    resetBtn.addEventListener("click", resetAll);
-
-    hintBtn.addEventListener("click", () => {
-      if (currentMode === "male") {
-        alert("這個賓果盤是用來整理「遊戲與動漫裡常見的男性主角樣板」。\\n你可以先從自己熟悉的一位男性角色開始，看看有哪些格子被勾起來，想一想：這些特徵是他們自由選的，還是劇本早就替他們安排好的？");
-      } else {
-        alert("現在是把同一套格子暫時套在女生身上的模式。\\n當一個人被用這些條件檢查時，很容易開始懷疑自己哪裡不對，而不是懷疑這套標準本身合不合理。你可以邊玩邊想：哪些評語你聽過或說過？那些時刻，誰被傷到了？");
-      }
-    });
-
-    closeModalBtn.addEventListener("click", hideBingoModal);
-
-    resetFromModalBtn.addEventListener("click", () => {
-      hideBingoModal();
+    $("resetBtn").addEventListener("click", resetAll);
+    $("hintBtn").addEventListener("click", () => openModal("hint"));
+    $("closeHintModal").addEventListener("click", () => closeModal("hint"));
+    $("closeModal").addEventListener("click", () => closeModal("bingo"));
+    $("resetFromModal").addEventListener("click", () => {
+      closeModal("bingo");
       resetAll();
     });
+    $("closeQuoteModal").addEventListener("click", () => closeModal("quote"));
+    $("guideSkip").addEventListener("click", () => {
+      markGuideDone();
+      showGuideStep(0);
+    });
+    $("sheetClose").addEventListener("click", () => document.body.classList.remove("sheet-open"));
+    modeButtons.male.addEventListener("click", () => setMode("male"));
+    modeButtons.female.addEventListener("click", () => setMode("female"));
 
-    modeToggleBtn.addEventListener("click", toggleMode);
-    closeQuoteModalBtn.addEventListener("click", hideQuoteModal);
+    // 點背景或按 Esc 關閉彈窗
+    Object.keys(modals).forEach(name => {
+      modals[name].addEventListener("click", e => {
+        if (e.target === modals[name]) closeModal(name);
+      });
+    });
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") Object.keys(modals).forEach(closeModal);
+    });
 
     // --- 啟動 ---
+    applyModeText();
     createGrid();
+
+    // 第一次進來先說明這頁在做什麼；看過或略過後不再自動跳出
+    let guideDone = false;
+    try { guideDone = localStorage.getItem(GUIDE_KEY) === "1"; } catch (e) {}
+    if (!guideDone) openModal("hint");
   </script>
 </body>
 </html>
