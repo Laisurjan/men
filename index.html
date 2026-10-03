@@ -4,6 +4,11 @@
   <meta charset="UTF-8" />
   <title>電玩主角刻板印象 BINGO</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="勾選遊戲與動漫男主角的常見特徵，再切換視角，看同一特質放在女性身上被怎麼說。國文課〈樂府詩選〉前導課程「重寫性別腳本」的媒體識讀活動。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://laisurjan.github.io/men/" />
+  <meta property="og:title" content="電玩主角刻板印象 BINGO｜重寫性別腳本 互動活動" />
+  <meta property="og:description" content="勾選遊戲與動漫男主角的常見特徵，再切換視角，看同一特質放在女性身上被怎麼說。" />
   <style>
     :root {
       --bg: #020617;
@@ -756,6 +761,34 @@
     .subcard p, .panel-question { color: #9aa6b8; }
     .subcard p .key, .panel-question span.key { color: #f1f5f9; font-weight: 600; }
 
+    /* 勾選小結：勾了幾格、集中在哪一類 */
+    .summary {
+      position: relative;
+      z-index: 1;
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 8px;
+      font-size: clamp(12px, 1.1vw, 19px);
+      color: var(--muted);
+    }
+    .summary[hidden] { display: none; }
+    .summary .chip {
+      padding: 2px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+    }
+    .summary .chip.top {
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    body[data-mode="female"] .summary .chip.top {
+      border-color: #fb7185;
+      color: #fda4af;
+    }
+
     /* 操作引導：畫面下方的提示列＋目前該操作的區塊外框 */
     .guide {
       position: fixed;
@@ -885,6 +918,8 @@
         <div class="grid" id="bingoGrid">
           <!-- cells 由 JS 產生 -->
         </div>
+
+        <div class="summary" id="summary" hidden></div>
 
         <div class="board-footer">
           <div>
@@ -1616,6 +1651,45 @@
 
       board.lines = lines;
       bingoCountEl.textContent = String(lines);
+      renderSummary();
+    }
+
+    // --- 勾選小結：把 14 種格子分類併成四大類，看勾選集中在哪裡 ---
+    const groupOf = {
+      "外貌": "外在形象", "表情": "外在形象", "裝備": "外在形象", "風格": "外在形象",
+      "心理": "內在情緒", "性格": "內在情緒",
+      "行為": "暴力與行動", "職業": "暴力與行動", "動機": "暴力與行動", "能力": "暴力與行動",
+      "背景": "身分背景", "身分": "身分背景", "觀點": "身分背景", "核心": "身分背景"
+    };
+
+    function renderSummary() {
+      const el = $("summary");
+      const picked = bingoData.filter(item => cur().selected.has(item.id));
+      el.textContent = "";
+      el.hidden = picked.length === 0;
+      if (picked.length === 0) return;
+
+      const counts = {};
+      picked.forEach(item => {
+        const group = groupOf[item.category];
+        counts[group] = (counts[group] || 0) + 1;
+      });
+      const groups = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+      const max = counts[groups[0]];
+      // 勾滿三格以上、且沒有三類以上同分，才說「最集中」
+      const tops = groups.filter(group => counts[group] === max);
+      const showTop = picked.length >= 3 && tops.length <= 2;
+
+      const lead = document.createElement("span");
+      lead.textContent = "已勾 " + picked.length + " 格" + (showTop ? "，最集中在〈" + tops.join("〉〈") + "〉" : "");
+      el.appendChild(lead);
+
+      groups.forEach(group => {
+        const chip = document.createElement("span");
+        chip.className = "chip" + (showTop && counts[group] === max ? " top" : "");
+        chip.textContent = group + " " + counts[group];
+        el.appendChild(chip);
+      });
     }
 
     // --- 彈窗 ---
@@ -1674,6 +1748,7 @@
       createGrid();
       showEmptyPanel();
       renderQuoteStrip();
+      renderSummary();
     }
 
     // --- 視角切換 ---
@@ -1716,6 +1791,7 @@
         showEmptyPanel();
       }
       renderQuoteStrip();
+      renderSummary();
       advanceGuide(mode);
     }
 
